@@ -237,7 +237,7 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
       Actualizar Excel
     </label>
     <input type="file" id="fileInput" accept=".xlsx,.xls">
-    <span class="ppill" id="pillP">Oct 2025 – Jun 2026</span>
+    <span class="ppill" id="pillP">Jun 2026</span>
   </div>
 </header>
 
@@ -247,7 +247,7 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
 <div class="fbar">
   <span class="flbl">Año</span>
   <div class="fbtnrow" id="btnYear">
-    <button class="fbtn on" onclick="setYear('ALL',this)">Todos</button>
+    <button class="fbtn" onclick="setYear('ALL',this)">Todos</button>
     <button class="fbtn" onclick="setYear('2025',this)">2025</button>
     <button class="fbtn" onclick="setYear('2026',this)">2026</button>
   </div>
@@ -259,7 +259,7 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
     <option value="202512">Dic 2025</option><option value="202601">Ene 2026</option>
     <option value="202602">Feb 2026</option><option value="202603">Mar 2026</option>
     <option value="202604">Abr 2026</option><option value="202605">May 2026</option>
-  <option value="202606">Jun 2026</option>
+  <option value="202606" selected>Jun 2026</option>
   </select>
   <div class="fbar-sep"></div>
   <span class="flbl">Gerencia</span>
@@ -418,7 +418,7 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
           <option value="202512">Dic 2025</option><option value="202601">Ene 2026</option>
           <option value="202602">Feb 2026</option><option value="202603">Mar 2026</option>
           <option value="202604">Abr 2026</option><option value="202605">May 2026</option>
-          <option value="202606">Jun 2026</option>
+          <option value="202606" selected>Jun 2026</option>
         </select>
         <div class="fbar-sep"></div>
         <span class="flbl">Gerencia:</span>
@@ -483,7 +483,7 @@ const GS=['G. Consultoría','G. Operaciones TyC','G. TI'];
 const GC=['#0DA9C9','#9BC534','#00B0F0'];
 
 // ── STATE ──────────────────────────────────────────────────────────
-let stYear='ALL', stMes='ALL', stGer='ALL';
+let stYear='ALL', stMes='202606', stGer='ALL';
 
 // ── FORMAT HELPERS ─────────────────────────────────────────────────
 function fmtM(v, dec=0) {
