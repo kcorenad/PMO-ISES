@@ -274,17 +274,17 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
 
 <!-- TABS -->
 <div class="tabs">
-  <button class="tab on"  onclick="sw('resumen',this)">📊 Resumen</button>
+  <button class="tab"     onclick="sw('resumen',this)">📊 Resumen</button>
   <button class="tab"     onclick="sw('historico',this)">📅 Histórico</button>
   <button class="tab"     onclick="sw('semanal',this)">📈 Semanal</button>
   <button class="tab"     onclick="sw('informe',this)">🔍 Informe Mensual</button>
-  <button class="tab"     onclick="sw('tabla',this)">📋 Detalle</button>
+  <button class="tab on"  onclick="sw('tabla',this)">📋 Detalle</button>
 </div>
 
 <!-- ══════════════════════════════════════════════════════
      TAB: RESUMEN
 ══════════════════════════════════════════════════════ -->
-<div id="pane-resumen" class="pane on">
+<div id="pane-resumen" class="pane">
   <div class="kpis" id="kpiRow"></div>
   <div class="g2">
     <div class="card">
@@ -396,7 +396,7 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
 <!-- ══════════════════════════════════════════════════════
      TAB: DETALLE
 ══════════════════════════════════════════════════════ -->
-<div id="pane-tabla" class="pane">
+<div id="pane-tabla" class="pane on">
   <div class="card">
     <div class="card-hd">
       <div><div class="card-t">Detalle WIP — Estructura Jerárquica</div>
@@ -1055,7 +1055,7 @@ function renderTabla(){
 
   // ── Determine initial open state based on filters ──
   // If ger or dir filter active → start expanded to that level
-  const startGerOpen = tGer!=='ALL' || tDir!=='ALL' || tSem!=='ALL';
+  const startGerOpen = true;  // always show directions by default
   const startDirOpen = tDir!=='ALL' || tSem!=='ALL';
 
   // ── Build table HTML ──
@@ -1284,6 +1284,7 @@ function refresh(){
 
 // ── INIT ────────────────────────────────────────────────────────────
 buildDirOptions();
+document.getElementById('selTabView').value='dir';
 refresh();
 rInforme();
 </script>
