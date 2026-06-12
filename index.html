@@ -1326,4 +1326,18 @@ buildDirOptions();
 refresh();
 rInforme();
 </script>
+
+<script>
+// Auto-altura para iframe en SharePoint
+function reportHeight() {
+  const h = document.documentElement.scrollHeight;
+  window.parent.postMessage({ iframeHeight: h }, '*');
+}
+window.addEventListener('load', reportHeight);
+window.addEventListener('resize', reportHeight);
+// También reportar tras cada cambio de pestaña o filtro
+document.addEventListener('click', function() {
+  setTimeout(reportHeight, 300);
+});
+</script>
 </body></html>
