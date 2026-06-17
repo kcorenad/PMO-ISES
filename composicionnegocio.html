@@ -147,6 +147,9 @@
   .dir-table td:first-child{text-align:left;}
   .dir-table tr:last-child td{border-bottom:none;}
   .dir-table .gtot{background:var(--bg);font-weight:600;}
+  .dir-row:hover td{background:#F3F2EF!important;}
+  .proj-row td{border-bottom-color:#F0EDE8;}
+
   .tbl-ger-hdr{font-size:10px;font-weight:700;padding:5px 10px;letter-spacing:.06em;text-transform:uppercase;}
   .tbl-ger-hdr.c{background:var(--cons-bg);color:var(--cons-tx);}
   .tbl-ger-hdr.o{background:var(--otc-bg);color:var(--otc-tx);}
@@ -265,13 +268,35 @@
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('grafico',event)">Gráfico</button>
+    <button class="tab active" onclick="switchTab('tabla',event)">Tabla detalle</button>
     <button class="tab" onclick="switchTab('analisis',event)">Análisis financiero</button>
-    <button class="tab" onclick="switchTab('tabla',event)">Tabla detalle</button>
+    <button class="tab" onclick="switchTab('grafico',event)">Gráfico</button>
   </div>
 
-  <!-- GRÁFICO -->
-  <div id="view-grafico" class="view active">
+  <!-- TABLA (primera) -->
+  <div id="view-tabla" class="view active">
+    <div class="tbl-card">
+      <table class="dir-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Dirección</th>
+            <th>Ing. 2025</th><th>Ing. 2026</th><th>% Aporte</th><th>Var. Ing.</th>
+            <th>UB 2025</th><th>UB 2026</th>
+            <th>Mgn 2025</th><th>Mgn 2026</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ANÁLISIS (segunda) -->
+  <div id="view-analisis" class="view">
+    <div id="af-container"></div>
+  </div>
+
+  <!-- GRÁFICO (tercera) -->
+  <div id="view-grafico" class="view">
     <div class="mpills">
       <button class="mpill active" onclick="setMetric('ing',this)">Ingresos</button>
       <button class="mpill" onclick="setMetric('ub',this)">Utilidad bruta</button>
@@ -292,28 +317,6 @@
     </div>
   </div>
 
-  <!-- ANÁLISIS -->
-  <div id="view-analisis" class="view">
-    <div id="af-container"></div>
-  </div>
-
-  <!-- TABLA -->
-  <div id="view-tabla" class="view">
-    <div class="tbl-card">
-      <table class="dir-table">
-        <thead>
-          <tr>
-            <th style="text-align:left;">Dirección</th>
-            <th>Ing. 2025</th><th>Ing. 2026</th><th>Var.</th>
-            <th>UB 2025</th><th>UB 2026</th>
-            <th>Mgn 2025</th><th>Mgn 2026</th>
-          </tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-      </table>
-    </div>
-  </div>
-
   <div class="footer">
     <span>Fuente: Composición del Negocio · Valores en millones COP (MCOP)</span>
     <span id="footer-period">Acumulado enero–marzo 2026</span>
@@ -322,6 +325,10 @@
 </div><!-- /wrapper -->
 
 <script>
+// ═══════════════════════════════════════════════════════════
+//  PROJECTS DATA
+const PROJ_DATA={"mar": {"Diseños Eléctricos": [{"cceco": "EDH23115-100", "nombre": "EDECHI DISEÑOS MTBT", "ing26": 285.9, "ub26": 212.0, "mgn26": 74.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDM23114-100", "nombre": "EDEMET DISEÑOS MTBT", "ing26": 238.4, "ub26": 118.8, "mgn26": 49.8, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN23112-100", "nombre": "PROVISIÓN AFN", "ing26": 182.1, "ub26": 47.6, "mgn26": 26.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EPM24101-100", "nombre": "LÍNEA SUBTERRÁNEA LNS", "ing26": 134.4, "ub26": 79.0, "mgn26": 58.7, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "TEB25103-100", "nombre": "VIABILIDAD TECNICA TEBSA", "ing26": 67.9, "ub26": 55.0, "mgn26": 81.1, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN24102-100", "nombre": "AFINIA ADT5", "ing26": 65.0, "ub26": 112.0, "mgn26": 172.2, "ing25": 0, "ub25": 0, "mgn25": 0}], "Interventoría": [{"cceco": "ENL23106-100", "nombre": "SERVICIOS DE INSPECCIÓN ENEL", "ing26": 571.4, "ub26": 8.5, "mgn26": 1.5, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDM23136-100", "nombre": "SUPERVISIÓN EDEMET", "ing26": 364.7, "ub26": 112.0, "mgn26": 30.7, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN22109-100", "nombre": "INTERVENTORÍA MT/BT AMI", "ing26": 278.8, "ub26": 81.6, "mgn26": 29.3, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EMS24103-100", "nombre": "INTERVENTORÍA COMERCIAL EMSA", "ing26": 122.9, "ub26": 53.6, "mgn26": 43.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EPM24100-100", "nombre": "INTERVENTORÍA AT - EPM", "ing26": 77.3, "ub26": 22.9, "mgn26": 29.6, "ing25": 0, "ub25": 0, "mgn25": 0}], "OTC Agua y Gest. Social": [{"cceco": "AAA23132-100", "nombre": "IRREGULARIDADES AGUA", "ing26": 338.5, "ub26": 105.7, "mgn26": 31.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ACU24101-100", "nombre": "GESTIÓN DE PÉRDIDAS ANC", "ing26": 197.6, "ub26": 7.4, "mgn26": 3.7, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ACU24100-100", "nombre": "LECTURA ACUACAR", "ing26": 188.6, "ub26": 60.9, "mgn26": 32.3, "ing25": 0, "ub25": 0, "mgn25": 0}], "Gestión de Activos": [{"cceco": "AFN24103-100", "nombre": "BDA AFINIA III", "ing26": 361.1, "ub26": 205.6, "mgn26": 56.9, "ing25": 0, "ub25": 0, "mgn25": 0}], "TI": [], "Sol. Energéticas": [{"cceco": "STD25101-100", "nombre": "SUMINISTRO Y ADECUACIÓN EQUIPOS OLIMPICA", "ing26": 183.4, "ub26": 176.5, "mgn26": 96.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "JMC24100-101", "nombre": "CAMBIO DE COMERCIALIZADOR MERCADO REGULADO Y NO REGULADO", "ing26": 90.9, "ub26": 74.2, "mgn26": 81.6, "ing25": 0, "ub25": 0, "mgn25": 0}], "Outsourcing": [{"cceco": "AIR22112-100", "nombre": "CENTRAL ESCRITOS AIRE", "ing26": 430.0, "ub26": 27.1, "mgn26": 6.3, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN23116-100", "nombre": "CENTRAL ESCRITOS AFINIA", "ing26": 262.6, "ub26": 21.3, "mgn26": 8.1, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDM22103-100", "nombre": "SERVICIOS CATALOGOS EDEMET", "ing26": 184.2, "ub26": 10.6, "mgn26": 5.8, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDH22102-100", "nombre": "SERVICIOS CATALOGOS EDECHI", "ing26": 57.6, "ub26": 47.4, "mgn26": 82.2, "ing25": 0, "ub25": 0, "mgn25": 0}], "Dir. Consultoría": [{"cceco": "UTI24100-100", "nombre": "CONSULTORÍA FENOGE HVDC", "ing26": 476.8, "ub26": 442.8, "mgn26": 92.9, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "JBE25100-100", "nombre": "ACTIVOS CRÍTICOS AT", "ing26": 119.8, "ub26": 67.8, "mgn26": 56.6, "ing25": 0, "ub25": 0, "mgn25": 0}], "Estudios Eléctricos": [], "OTC Energía": [{"cceco": "1051", "nombre": "ACISES 2022", "ing26": 901.4, "ub26": 649.9, "mgn26": 72.1, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "1052", "nombre": "BM ISES 2023", "ing26": 288.3, "ub26": 5.2, "mgn26": 1.8, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "CEN24100-100", "nombre": "ATC CENS", "ing26": 105.2, "ub26": 32.4, "mgn26": 30.8, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR24101-100", "nombre": "ANÁLISIS NUEVAS CONEXIONES", "ing26": 54.9, "ub26": 15.3, "mgn26": 27.9, "ing25": 0, "ub25": 0, "mgn25": 0}]}, "abr": {"Estudios Eléctricos": [{"cceco": "EDM23114-101", "nombre": "ESTUDIOS CONEXIÓN EDEMET", "ing26": 88.8, "ub26": 16.7, "mgn26": 18.8, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "PER25100-100", "nombre": "PROERCOL ESTUDIOS", "ing26": 58.3, "ub26": 23.8, "mgn26": 40.8, "ing25": 0, "ub25": 0, "mgn25": 0}], "Diseños Eléctricos": [{"cceco": "EDM23114-100", "nombre": "EDEMET DISEÑOS MTBT", "ing26": 1323.7, "ub26": 699.9, "mgn26": 52.9, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "UNA25100-100", "nombre": "Inventario de activos MME", "ing26": 1147.2, "ub26": 1116.3, "mgn26": 97.3, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN23112-100", "nombre": "PROVISIÓN AFN", "ing26": 754.0, "ub26": 244.7, "mgn26": 32.5, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR25105-100", "nombre": "LEV. DE TRANSFORMADORES", "ing26": 697.4, "ub26": 300.9, "mgn26": 43.1, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDH23115-100", "nombre": "EDECHI DISEÑOS MTBT", "ing26": 544.8, "ub26": 228.0, "mgn26": 41.9, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN24100-100", "nombre": "AFINIA ADT6", "ing26": 436.4, "ub26": 58.9, "mgn26": 13.5, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN24102-100", "nombre": "AFINIA ADT5", "ing26": 400.3, "ub26": 29.5, "mgn26": 7.4, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDM23136-101", "nombre": "DISEÑOS AT EDEMET", "ing26": 230.7, "ub26": 267.2, "mgn26": 115.8, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "CEL24101-100", "nombre": "ACUERDO DE PRECIOS CELSIA SUBESTACIONES", "ing26": 79.0, "ub26": 38.2, "mgn26": 48.4, "ing25": 0, "ub25": 0, "mgn25": 0}], "Interventoría": [{"cceco": "AFN24103-100", "nombre": "BDA AFINIA III", "ing26": 2030.0, "ub26": 1088.2, "mgn26": 53.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDM23136-100", "nombre": "SUPERVISIÓN EDEMET", "ing26": 1723.4, "ub26": 384.0, "mgn26": 22.3, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "CEL25103-100", "nombre": "VERIFICACIÓN TÉCNICA Y ADMINISTRATIVA CELSIA", "ing26": 1460.1, "ub26": 112.6, "mgn26": 7.7, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ENL23106-100", "nombre": "SERVICIOS DE INSPECCIÓN ENEL", "ing26": 556.5, "ub26": 86.7, "mgn26": 15.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EMS24103-100", "nombre": "INTERVENTORÍA COMERCIAL EMSA", "ing26": 523.7, "ub26": 247.0, "mgn26": 47.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "FID25101-100", "nombre": "Interventoría FTDP", "ing26": 494.1, "ub26": 392.5, "mgn26": 79.4, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ENL24101-100", "nombre": "SUPERVISIÓN Y ASEGURAMIENTO DE PRUEBAS ENEL", "ing26": 430.7, "ub26": 126.8, "mgn26": 29.4, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDH23137-100", "nombre": "SUPERVISIÓN EDECHI", "ing26": 289.5, "ub26": 79.8, "mgn26": 27.5, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "DIS25103-100", "nombre": "INTERVENTORÍA DISPAC AOM", "ing26": 186.0, "ub26": 136.8, "mgn26": 73.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EMS23103-100", "nombre": "EMSA ESMERALDA", "ing26": 105.3, "ub26": 10.7, "mgn26": 10.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "TEB25104-100", "nombre": "TEBSA CAMBIO DE TERNA GT22", "ing26": 75.6, "ub26": 60.8, "mgn26": 80.5, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "CEC25101-100", "nombre": "INTERVENTORÍA CEDELCA-BOLÍVAR", "ing26": 57.1, "ub26": 0.8, "mgn26": 1.4, "ing25": 0, "ub25": 0, "mgn25": 0}], "Gestión de Activos": [{"cceco": "AIR25105-101", "nombre": "LEV. DE TRANSFORMADORES ACTIVOS", "ing26": 796.6, "ub26": 705.7, "mgn26": 88.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ESA25101-100", "nombre": "LEV. DE REDES E INVENTARIO ESSA", "ing26": 333.5, "ub26": 16.9, "mgn26": 5.1, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR25103-100", "nombre": "INVENTARIO DE LUMINARIAS", "ing26": 202.0, "ub26": 185.3, "mgn26": 91.7, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "JMC24100-101", "nombre": "CAMBIO DE COMERCIALIZADOR MERCADO REGULADO Y NO REGULADO", "ing26": 105.1, "ub26": 69.1, "mgn26": 65.7, "ing25": 0, "ub25": 0, "mgn25": 0}], "Sol. Energéticas": [{"cceco": "JMC24100-102", "nombre": "INMÓTICA - ARA", "ing26": 245.2, "ub26": 94.6, "mgn26": 38.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "GEB25100-100", "nombre": "ACUERDOS MARCO GEB", "ing26": 60.0, "ub26": 85.8, "mgn26": 143.1, "ing25": 0, "ub25": 0, "mgn25": 0}], "Dir. Consultoría": [{"cceco": "XMC25100-100", "nombre": "VERIFICACIÓN PLANES DE INVERSIÓN XM", "ing26": 1127.1, "ub26": 993.7, "mgn26": 88.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR25105-102", "nombre": "LEV. DE TRANSFORMADORES CONSULTORIA", "ing26": 812.1, "ub26": 707.9, "mgn26": 87.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "CRE25100-100", "nombre": "CREE Normativa Distribución", "ing26": 247.8, "ub26": 231.5, "mgn26": 93.4, "ing25": 0, "ub25": 0, "mgn25": 0}], "Outsourcing": [{"cceco": "AAA23132-100", "nombre": "IRREGULARIDADES AGUA", "ing26": 2338.5, "ub26": 1002.6, "mgn26": 42.9, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN23116-100", "nombre": "CENTRAL ESCRITOS AFINIA", "ing26": 1807.1, "ub26": 493.3, "mgn26": 27.3, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR22112-100", "nombre": "CENTRAL ESCRITOS AIRE", "ing26": 1724.4, "ub26": 435.1, "mgn26": 25.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDM22103-100", "nombre": "SERVICIOS CATALOGOS EDEMET", "ing26": 1054.2, "ub26": 385.5, "mgn26": 36.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EDH22102-100", "nombre": "SERVICIOS CATALOGOS EDECHI", "ing26": 229.4, "ub26": 126.9, "mgn26": 55.3, "ing25": 0, "ub25": 0, "mgn25": 0}], "OTC Agua y Gest. Social": [{"cceco": "AIR22200-100", "nombre": "SCR Sur", "ing26": 4451.5, "ub26": 1345.1, "mgn26": 30.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ACU24100-100", "nombre": "LECTURA ACUACAR", "ing26": 1089.6, "ub26": 331.6, "mgn26": 30.4, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ACU24101-100", "nombre": "GESTIÓN DE PÉRDIDAS ANC", "ing26": 1076.1, "ub26": 125.2, "mgn26": 11.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EMS24105-100", "nombre": "GESTION SOCIAL EMSA", "ing26": 208.1, "ub26": 82.1, "mgn26": 39.4, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AAA24100-100", "nombre": "Gestión Social Triple A", "ing26": 203.6, "ub26": 85.5, "mgn26": 42.0, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ESA24100-100", "nombre": "GESTION SOCIAL ESSA", "ing26": 124.1, "ub26": 52.0, "mgn26": 41.9, "ing25": 0, "ub25": 0, "mgn25": 0}], "OTC Energía": [{"cceco": "AIR22200-101", "nombre": "SCR Norte - Centro", "ing26": 6037.9, "ub26": 1902.6, "mgn26": 31.5, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ELH25100-100", "nombre": "SCR-LR-ELECTROHUILA", "ing26": 3748.8, "ub26": 102.3, "mgn26": 2.7, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "1052", "nombre": "BM ISES 2023", "ing26": 1294.6, "ub26": 226.3, "mgn26": 17.5, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "CEN24100-100", "nombre": "ATC CENS", "ing26": 465.4, "ub26": 126.6, "mgn26": 27.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR25104-100", "nombre": "CENSOBMT", "ing26": 200.4, "ub26": 82.7, "mgn26": 41.2, "ing25": 0, "ub25": 0, "mgn25": 0}], "TI": [{"cceco": "AIR23100-100", "nombre": "FORMAP AUDITORÍA AIR", "ing26": 147.8, "ub26": 52.5, "mgn26": 35.5, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "JMC24100-100", "nombre": "AVI – TIENDAS ARA", "ing26": 70.4, "ub26": 24.8, "mgn26": 35.2, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN24101-100", "nombre": "HERAMIENTAS FORMAP y SAIC", "ing26": 66.6, "ub26": 21.3, "mgn26": 32.0, "ing25": 0, "ub25": 0, "mgn25": 0}]}, "may": {"Estudios Eléctricos": [{"cceco": "EDM23114-101", "nombre": "ESTUDIOS CONEXIÓN EDEMET", "ing26": 115.5, "ub26": 29.4, "mgn26": 25.5, "ing25": 106.8, "ub25": 72.8, "mgn25": 68.2}, {"cceco": "PER25100-100", "nombre": "PROERCOL ESTUDIOS", "ing26": 70.1, "ub26": 31.9, "mgn26": 45.5, "ing25": 49.4, "ub25": 28.4, "mgn25": 57.6}], "Diseños Eléctricos": [{"cceco": "EDM23114-100", "nombre": "EDEMET DISEÑOS MTBT", "ing26": 1597.8, "ub26": 784.8, "mgn26": 49.1, "ing25": 965.9, "ub25": 362.3, "mgn25": 37.5}, {"cceco": "UNA25100-100", "nombre": "Inventario de activos MME", "ing26": 1525.2, "ub26": 1500.0, "mgn26": 98.3, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR25105-100", "nombre": "LEV. DE TRANSFORMADORES", "ing26": 943.8, "ub26": 471.1, "mgn26": 49.9, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AFN23112-100", "nombre": "PROVISIÓN AFN", "ing26": 929.0, "ub26": 276.2, "mgn26": 29.7, "ing25": 963.6, "ub25": 300.6, "mgn25": 31.2}, {"cceco": "AFN24102-100", "nombre": "AFINIA ADT5", "ing26": 696.9, "ub26": 214.3, "mgn26": 30.7, "ing25": 568.2, "ub25": 213.3, "mgn25": 37.5}, {"cceco": "EDH23115-100", "nombre": "EDECHI DISEÑOS MTBT", "ing26": 694.1, "ub26": 300.7, "mgn26": 43.3, "ing25": 1074.1, "ub25": 732.9, "mgn25": 68.2}, {"cceco": "AFN24100-100", "nombre": "AFINIA ADT6", "ing26": 447.1, "ub26": 52.3, "mgn26": 11.7, "ing25": 285.4, "ub25": 224.1, "mgn25": 78.5}, {"cceco": "EDM23136-101", "nombre": "DISEÑOS AT EDEMET", "ing26": 307.6, "ub26": 378.3, "mgn26": 123.0, "ing25": 416.2, "ub25": 11.1, "mgn25": 2.7}, {"cceco": "CEL24101-100", "nombre": "ACUERDO DE PRECIOS CELSIA SUBESTACIONES", "ing26": 79.0, "ub26": 18.7, "mgn26": 23.7, "ing25": 0.0, "ub25": 30.8, "mgn25": 0}, {"cceco": "ENS25100-100", "nombre": "ENSA PANAMÁ II", "ing26": 59.6, "ub26": 10.4, "mgn26": 17.5, "ing25": 14.9, "ub25": 5.4, "mgn25": 36.5}], "Interventoría": [{"cceco": "EDM23136-100", "nombre": "SUPERVISIÓN EDEMET", "ing26": 2198.9, "ub26": 508.5, "mgn26": 23.1, "ing25": 1666.2, "ub25": 395.5, "mgn25": 23.7}, {"cceco": "CEL25103-100", "nombre": "VERIFICACIÓN TÉCNICA Y ADMINISTRATIVA CELSIA", "ing26": 1807.5, "ub26": 171.7, "mgn26": 9.5, "ing25": 0.0, "ub25": 80.3, "mgn25": 0}, {"cceco": "EMS24103-100", "nombre": "INTERVENTORÍA COMERCIAL EMSA", "ing26": 652.9, "ub26": 307.2, "mgn26": 47.1, "ing25": 616.7, "ub25": 288.7, "mgn25": 46.8}, {"cceco": "FID25101-100", "nombre": "Interventoría FTDP", "ing26": 588.2, "ub26": 390.9, "mgn26": 66.4, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ENL23106-100", "nombre": "SERVICIOS DE INSPECCIÓN ENEL", "ing26": 556.5, "ub26": 72.2, "mgn26": 13.0, "ing25": 3541.1, "ub25": 922.4, "mgn25": 26.0}, {"cceco": "ENL24101-100", "nombre": "SUPERVISIÓN Y ASEGURAMIENTO DE PRUEBAS ENEL", "ing26": 500.7, "ub26": 122.2, "mgn26": 24.4, "ing25": 174.5, "ub25": 167.2, "mgn25": 95.8}, {"cceco": "EDH23137-100", "nombre": "SUPERVISIÓN EDECHI", "ing26": 366.0, "ub26": 115.2, "mgn26": 31.5, "ing25": 214.3, "ub25": 101.5, "mgn25": 47.4}, {"cceco": "DIS25103-100", "nombre": "INTERVENTORÍA DISPAC AOM", "ing26": 232.1, "ub26": 176.2, "mgn26": 75.9, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "EMS23103-100", "nombre": "EMSA ESMERALDA", "ing26": 216.1, "ub26": 96.1, "mgn26": 44.5, "ing25": 22.2, "ub25": 66.5, "mgn25": 300.1}, {"cceco": "TEB25104-100", "nombre": "TEBSA CAMBIO DE TERNA GT22", "ing26": 104.2, "ub26": 56.9, "mgn26": 54.6, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "CEC25101-100", "nombre": "INTERVENTORÍA CEDELCA-BOLÍVAR", "ing26": 86.8, "ub26": 9.5, "mgn26": 10.9, "ing25": 0.0, "ub25": 0.4, "mgn25": 0}, {"cceco": "EMS23104-100", "nombre": "EMSA SIKUANI", "ing26": 66.6, "ub26": 56.0, "mgn26": 84.1, "ing25": 144.2, "ub25": 12.8, "mgn25": 8.8}, {"cceco": "1050", "nombre": "ADISES 2021", "ing26": 56.6, "ub26": 1.4, "mgn26": 2.4, "ing25": 189.3, "ub25": 141.3, "mgn25": 74.6}], "Gestión de Activos": [{"cceco": "AFN24103-100", "nombre": "BDA AFINIA III", "ing26": 2417.6, "ub26": 1264.2, "mgn26": 52.3, "ing25": 1674.3, "ub25": 939.3, "mgn25": 56.1}, {"cceco": "AIR25105-101", "nombre": "LEV. DE TRANSFORMADORES ACTIVOS", "ing26": 872.5, "ub26": 765.6, "mgn26": 87.7, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "ESA25101-100", "nombre": "LEV. DE REDES E INVENTARIO ESSA", "ing26": 424.0, "ub26": 8.8, "mgn26": 2.1, "ing25": 0.0, "ub25": 114.2, "mgn25": 0}, {"cceco": "AIR25103-100", "nombre": "INVENTARIO DE LUMINARIAS", "ing26": 225.2, "ub26": 213.7, "mgn26": 94.9, "ing25": 0, "ub25": 0, "mgn25": 0}], "Sol. Energéticas": [{"cceco": "JMC24100-102", "nombre": "INMÓTICA - ARA", "ing26": 320.9, "ub26": 138.5, "mgn26": 43.1, "ing25": 60.5, "ub25": 49.9, "mgn25": 82.6}, {"cceco": "JMC24100-101", "nombre": "CAMBIO DE COMERCIALIZADOR MERCADO REGULADO Y NO REGULADO", "ing26": 125.6, "ub26": 172.9, "mgn26": 137.7, "ing25": 476.2, "ub25": 399.3, "mgn25": 83.9}, {"cceco": "GEB25100-100", "nombre": "ACUERDOS MARCO GEB", "ing26": 60.0, "ub26": 59.2, "mgn26": 98.7, "ing25": 71.1, "ub25": 71.1, "mgn25": 99.9}], "Dir. Consultoría": [{"cceco": "XMC25100-100", "nombre": "VERIFICACIÓN PLANES DE INVERSIÓN XM", "ing26": 1236.9, "ub26": 1060.0, "mgn26": 85.7, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR25105-102", "nombre": "LEV. DE TRANSFORMADORES CONSULTORIA", "ing26": 872.8, "ub26": 656.8, "mgn26": 75.3, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "CRE25100-100", "nombre": "CREE Normativa Distribución", "ing26": 263.6, "ub26": 238.1, "mgn26": 90.3, "ing25": 0, "ub25": 0, "mgn25": 0}], "Outsourcing": [{"cceco": "AFN23116-100", "nombre": "CENTRAL ESCRITOS AFINIA", "ing26": 2309.3, "ub26": 658.4, "mgn26": 28.5, "ing25": 1472.7, "ub25": 237.3, "mgn25": 16.1}, {"cceco": "AIR22112-100", "nombre": "CENTRAL ESCRITOS AIRE", "ing26": 2208.2, "ub26": 583.9, "mgn26": 26.4, "ing25": 2614.3, "ub25": 662.5, "mgn25": 25.3}, {"cceco": "EDM22103-100", "nombre": "SERVICIOS CATALOGOS EDEMET", "ing26": 1329.0, "ub26": 507.5, "mgn26": 38.2, "ing25": 567.7, "ub25": 236.8, "mgn25": 41.7}, {"cceco": "EDH22102-100", "nombre": "SERVICIOS CATALOGOS EDECHI", "ing26": 257.4, "ub26": 126.8, "mgn26": 49.3, "ing25": 138.3, "ub25": 78.0, "mgn25": 56.4}], "OTC Agua y Gest. Social": [{"cceco": "AAA23132-100", "nombre": "IRREGULARIDADES AGUA", "ing26": 2837.2, "ub26": 1218.5, "mgn26": 42.9, "ing25": 1805.9, "ub25": 655.0, "mgn25": 36.3}, {"cceco": "ACU24100-100", "nombre": "LECTURA ACUACAR", "ing26": 1395.6, "ub26": 438.9, "mgn26": 31.4, "ing25": 1026.9, "ub25": 335.5, "mgn25": 32.7}, {"cceco": "ACU24101-100", "nombre": "GESTIÓN DE PÉRDIDAS ANC", "ing26": 1212.8, "ub26": 20.4, "mgn26": 1.7, "ing25": 949.7, "ub25": 27.7, "mgn25": 2.9}, {"cceco": "EMS24105-100", "nombre": "GESTION SOCIAL EMSA", "ing26": 260.1, "ub26": 103.9, "mgn26": 39.9, "ing25": 197.8, "ub25": 58.7, "mgn25": 29.7}, {"cceco": "AAA24100-100", "nombre": "Gestión Social Triple A", "ing26": 254.6, "ub26": 102.6, "mgn26": 40.3, "ing25": 242.1, "ub25": 99.7, "mgn25": 41.2}, {"cceco": "ESA24100-100", "nombre": "GESTION SOCIAL ESSA", "ing26": 145.4, "ub26": 56.5, "mgn26": 38.9, "ing25": 148.4, "ub25": 42.7, "mgn25": 28.8}], "OTC Energía": [{"cceco": "AIR22200-101", "nombre": "SCR Norte - Centro", "ing26": 7656.2, "ub26": 2404.1, "mgn26": 31.4, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "AIR22200-100", "nombre": "SCR Sur", "ing26": 5551.5, "ub26": 1621.9, "mgn26": 29.2, "ing25": 838.2, "ub25": 1899.5, "mgn25": 226.6}, {"cceco": "ELH25100-100", "nombre": "SCR-LR-ELECTROHUILA", "ing26": 4778.6, "ub26": 253.5, "mgn26": 5.3, "ing25": 0, "ub25": 0, "mgn25": 0}, {"cceco": "1052", "nombre": "BM ISES 2023", "ing26": 1650.7, "ub26": 324.2, "mgn26": 19.6, "ing25": 1557.0, "ub25": 241.9, "mgn25": 15.5}, {"cceco": "CEN24100-100", "nombre": "ATC CENS", "ing26": 589.8, "ub26": 159.6, "mgn26": 27.1, "ing25": 543.4, "ub25": 186.9, "mgn25": 34.4}, {"cceco": "AIR25104-100", "nombre": "CENSOBMT", "ing26": 200.4, "ub26": 79.6, "mgn26": 39.7, "ing25": 0, "ub25": 0, "mgn25": 0}], "TI": [{"cceco": "AIR23100-100", "nombre": "FORMAP AUDITORÍA AIR", "ing26": 182.1, "ub26": 68.7, "mgn26": 37.7, "ing25": 197.6, "ub25": 143.1, "mgn25": 72.4}, {"cceco": "JMC24100-100", "nombre": "AVI – TIENDAS ARA", "ing26": 88.9, "ub26": 36.1, "mgn26": 40.6, "ing25": 60.0, "ub25": 13.1, "mgn25": 21.9}, {"cceco": "AFN24101-100", "nombre": "HERAMIENTAS FORMAP y SAIC", "ing26": 82.7, "ub26": 31.7, "mgn26": 38.3, "ing25": 75.1, "ub25": 23.0, "mgn25": 30.6}]}};
+
 // ═══════════════════════════════════════════════════════════
 //  DATA
 // ═══════════════════════════════════════════════════════════
@@ -470,39 +477,137 @@ function renderCharts(d,metric){
 // ═══════════════════════════════════════════════════════════
 function renderTable(d){
   const dirs=getDirs(d);
-  const body=el('table-body');body.innerHTML='';
+  const body=el('table-body');
+  body.innerHTML='';
+  const totalEmp26=dirs.reduce((s,x)=>s+x.i26,0);
+  const monthProjs=PROJ_DATA[currentMonth]||{};
+
   GERS.forEach(ger=>{
     const dlist=dirs.filter(x=>x.ger===ger);
     const gcls=GER_CLS[ger];
-    body.insertAdjacentHTML('beforeend',`<tr><td colspan="8" class="tbl-ger-hdr ${gcls}">${GER_FULL[ger]}</td></tr>`);
-    let ti25=0,ti26=0,tu25=0,tu26=0;
-    dlist.forEach(dr=>{
-      ti25+=dr.i25;ti26+=dr.i26;tu25+=dr.u25;tu26+=dr.u26;
-      const vi=pct(dr.i25,dr.i26);
-      body.insertAdjacentHTML('beforeend',`<tr>
-        <td style="padding-left:20px;">${dr.label}</td>
-        <td>${dr.i25?fmtM(dr.i25):'—'}</td><td>${fmtM(dr.i26)}</td>
-        <td><span class="badge ${vi===null?'na':vi>=0?'up':'dn'}">${fmtV(vi)}</span></td>
-        <td style="color:${dr.u25<0?'#A32D2D':'inherit'};">${dr.u25?fmtM(dr.u25):'—'}</td>
-        <td style="color:${dr.u26<0?'#A32D2D':'inherit'};">${fmtM(dr.u26)}</td>
-        <td>${dr.i25?dr.m25+'%':'—'}</td>
-        <td style="color:${dr.m26<0?'#A32D2D':'inherit'};">${dr.m26+'%'}</td>
-      </tr>`);
-    });
-    const gm25=ti25?parseFloat((tu25/ti25*100).toFixed(1)):0;
-    const gm26=ti26?parseFloat((tu26/ti26*100).toFixed(1)):0;
-    const gvi=pct(ti25,ti26);
-    body.insertAdjacentHTML('beforeend',`<tr class="gtot">
-      <td style="padding-left:20px;">Total ${GER_FULL[ger]}</td>
-      <td>${ti25?fmtM(ti25):'—'}</td><td>${fmtM(ti26)}</td>
-      <td><span class="badge ${gvi>=0?'up':'dn'}">${fmtV(gvi)}</span></td>
-      <td>${tu25?fmtM(tu25):'—'}</td>
-      <td style="color:${tu26<0?'#A32D2D':'inherit'};">${fmtM(tu26)}</td>
-      <td>${ti25?gm25+'%':'—'}</td>
-      <td style="color:${gm26<0?'#A32D2D':'inherit'};">${gm26+'%'}</td>
+    const gTot26=dlist.reduce((s,x)=>s+x.i26,0);
+    const gTot25=dlist.reduce((s,x)=>s+x.i25,0);
+    const gTotU25=dlist.reduce((s,x)=>s+x.u25,0);
+    const gTotU26=dlist.reduce((s,x)=>s+x.u26,0);
+    const apGer=totalEmp26?parseFloat((gTot26/totalEmp26*100).toFixed(1)):0;
+    const gm25=gTot25?parseFloat((gTotU25/gTot25*100).toFixed(1)):0;
+    const gm26=gTot26?parseFloat((gTotU26/gTot26*100).toFixed(1)):0;
+    const gvi=pct(gTot25,gTot26);
+
+    // ── GERENCIA header ──────────────────────────────────────────────────────
+    body.insertAdjacentHTML('beforeend',`<tr>
+      <td colspan="9" class="tbl-ger-hdr ${gcls}">
+        ${GER_FULL[ger]}
+        <span style="font-weight:400;opacity:.7;margin-left:6px;">· ${apGer}% del total empresa</span>
+        &nbsp;·&nbsp;
+        <span style="font-weight:600;">Ing. 2025: ${gTot25?fmtM(gTot25):'—'} → 2026: ${fmtM(gTot26)}</span>
+        <span style="margin-left:6px;" class="${gvi>=0?'':''}">UB 2026: ${fmtM(gTotU26)} · Mgn: ${gm26}%</span>
+      </td>
     </tr>`);
+
+    // ── DIRECTIONS ────────────────────────────────────────────────────────────
+    dlist.forEach(dr=>{
+      const vi=pct(dr.i25,dr.i26);
+      const apDir=gTot26?parseFloat((dr.i26/gTot26*100).toFixed(1)):0;
+      const barW=Math.min(apDir,100);
+      const projs=(monthProjs[dr.label]||[]);
+      const dirTot=projs.reduce((s,p)=>s+p.ing26,0);
+
+      // DIRECTION row
+      body.insertAdjacentHTML('beforeend',`<tr style="background:#F5F4F1;">
+        <td colspan="9" style="padding:0;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr style="background:#F0EDE8;">
+              <td style="padding:6px 10px 6px 22px;width:34%;font-weight:600;font-size:12px;color:var(--text);">
+                ${dr.label}
+                ${projs.length?'<span style="font-weight:400;font-size:10px;color:var(--muted);margin-left:5px;">'+projs.length+' proyectos</span>':''}
+              </td>
+              <td style="padding:6px 10px;font-size:11px;color:var(--muted);width:13%;text-align:right;">${dr.i25?fmtM(dr.i25):'—'}</td>
+              <td style="padding:6px 10px;font-size:12px;font-weight:500;width:13%;text-align:right;">${fmtM(dr.i26)}</td>
+              <td style="padding:6px 10px;width:10%;text-align:right;">
+                <span style="font-size:11px;font-weight:700;color:#185FA5;">${apDir}%</span>
+                <div style="width:44px;height:4px;background:#D8D5CF;border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:4px;">
+                  <div style="width:${barW}%;height:100%;background:#185FA5;border-radius:3px;"></div>
+                </div>
+              </td>
+              <td style="padding:6px 10px;width:8%;text-align:right;"><span class="badge ${vi===null?'na':vi>=0?'up':'dn'}">${fmtV(vi)}</span></td>
+              <td style="padding:6px 10px;font-size:11px;width:9%;text-align:right;color:${dr.u25<0?'#A32D2D':'var(--muted)'};">${dr.u25?fmtM(dr.u25):'—'}</td>
+              <td style="padding:6px 10px;font-size:11px;width:9%;text-align:right;color:${dr.u26<0?'#A32D2D':'inherit'};">${fmtM(dr.u26)}</td>
+              <td style="padding:6px 10px;font-size:11px;width:7%;text-align:right;color:var(--muted);">${dr.i25?dr.m25+'%':'—'}</td>
+              <td style="padding:6px 10px;font-size:11px;width:7%;text-align:right;color:${dr.m26<0?'#A32D2D':'inherit'};">${dr.m26}%</td>
+            </tr>
+          </table>
+        </td>
+      </tr>`);
+
+      // ── PROJECT RANKING (always visible) ────────────────────────────────────
+      if(projs.length){
+        // Column sub-header for projects
+        body.insertAdjacentHTML('beforeend',`<tr style="background:#FAFAF8;">
+          <td colspan="9" style="padding:0;">
+            <table style="width:100%;border-collapse:collapse;font-size:10px;">
+              <tr style="border-bottom:1px solid #EAE8E2;">
+                <td style="padding:4px 10px 4px 42px;color:var(--hint);font-weight:600;width:34%;text-transform:uppercase;letter-spacing:.04em;">Ranking proyectos por ingresos 2026</td>
+                <td style="padding:4px 10px;color:var(--hint);width:13%;text-align:right;font-weight:600;">Ing. 2025</td>
+                <td style="padding:4px 10px;color:var(--hint);width:13%;text-align:right;font-weight:600;">Ing. 2026</td>
+                <td style="padding:4px 10px;color:var(--hint);width:10%;text-align:right;font-weight:600;">% Dir.</td>
+                <td style="padding:4px 10px;color:var(--hint);width:8%;text-align:right;font-weight:600;">Var.</td>
+                <td style="padding:4px 10px;color:var(--hint);width:9%;text-align:right;font-weight:600;">UB 2025</td>
+                <td style="padding:4px 10px;color:var(--hint);width:9%;text-align:right;font-weight:600;">UB 2026</td>
+                <td style="padding:4px 10px;color:var(--hint);width:7%;text-align:right;font-weight:600;">Mgn 25</td>
+                <td style="padding:4px 10px;color:var(--hint);width:7%;text-align:right;font-weight:600;">Mgn 26</td>
+              </tr>
+            </table>
+          </td>
+        </tr>`);
+
+        // Project rows sorted by ing26 desc
+        const sorted=[...projs].sort((a,b)=>b.ing26-a.ing26);
+        sorted.forEach((p,idx)=>{
+          const pvi=p.ing25>0?pct(p.ing25,p.ing26):null;
+          const apP=dr.i26?parseFloat((p.ing26/dr.i26*100).toFixed(1)):0;
+          const isNew=p.ing25===0;
+          const rankColor=idx===0?'#185FA5':idx===1?'#378ADD':idx===2?'#5B9BD5':'#A8A69F';
+          body.insertAdjacentHTML('beforeend',`<tr style="background:#FEFEFE;border-bottom:1px solid #F0EDE8;">
+            <td colspan="9" style="padding:0;">
+              <table style="width:100%;border-collapse:collapse;font-size:11px;">
+                <tr>
+                  <td style="padding:5px 10px 5px 42px;width:34%;">
+                    <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:${rankColor};color:#fff;font-size:9px;font-weight:700;margin-right:6px;flex-shrink:0;">${idx+1}</span>
+                    <span style="font-family:monospace;font-size:9px;color:var(--hint);margin-right:4px;">${p.cceco}</span>
+                    <span style="color:var(--text);">${p.nombre}</span>
+                    ${isNew?'<span style="margin-left:5px;font-size:9px;padding:1px 5px;background:#E6F1FB;color:#185FA5;border-radius:10px;font-weight:600;">NUEVO</span>':''}
+                  </td>
+                  <td style="padding:5px 10px;width:13%;text-align:right;color:var(--hint);">${p.ing25>0?fmtM(p.ing25):'—'}</td>
+                  <td style="padding:5px 10px;width:13%;text-align:right;font-weight:600;">${fmtM(p.ing26)}</td>
+                  <td style="padding:5px 10px;width:10%;text-align:right;color:#185FA5;font-weight:600;">${apP}%</td>
+                  <td style="padding:5px 10px;width:8%;text-align:right;">${pvi!==null?'<span class="badge '+(pvi>=0?'up':'dn')+'">'+fmtV(pvi)+'</span>':'<span style="font-size:10px;color:#185FA5;">nuevo</span>'}</td>
+                  <td style="padding:5px 10px;width:9%;text-align:right;color:var(--hint);">${p.ub25>0?fmtM(p.ub25):'—'}</td>
+                  <td style="padding:5px 10px;width:9%;text-align:right;color:${p.ub26<0?'#A32D2D':'inherit'};">${fmtM(p.ub26)}</td>
+                  <td style="padding:5px 10px;width:7%;text-align:right;color:var(--hint);">${p.mgn25>0?p.mgn25+'%':'—'}</td>
+                  <td style="padding:5px 10px;width:7%;text-align:right;color:${p.mgn26<0?'#A32D2D':'inherit'};">${p.mgn26}%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>`);
+        });
+      }
+    });
+
+    // ── GERENCIA TOTAL row ────────────────────────────────────────────────────
+    body.insertAdjacentHTML('beforeend',`<tr class="gtot" style="font-weight:700;border-top:2px solid var(--border);">
+      <td style="padding-left:14px;">Total ${GER_FULL[ger]}</td>
+      <td>${gTot25?fmtM(gTot25):'—'}</td><td>${fmtM(gTot26)}</td>
+      <td style="text-align:right;font-size:11px;font-weight:700;color:#185FA5;">${apGer}%</td>
+      <td><span class="badge ${gvi>=0?'up':'dn'}">${fmtV(gvi)}</span></td>
+      <td>${gTotU25?fmtM(gTotU25):'—'}</td>
+      <td style="color:${gTotU26<0?'#A32D2D':'inherit'};">${fmtM(gTotU26)}</td>
+      <td>${gTot25?gm25+'%':'—'}</td>
+      <td style="color:${gm26<0?'#A32D2D':'inherit'};">${gm26}%</td>
+    </tr><tr><td colspan="9" style="height:12px;background:var(--bg);"></td></tr>`);
   });
 }
+
 
 // ═══════════════════════════════════════════════════════════
 //  COMMENT GENERATORS
