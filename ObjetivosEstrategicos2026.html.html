@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Objetivos Estratégicos 2026 — ISES</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f5f7;color:#1a1a2e;font-size:13px;min-height:100vh}
+/* ── Layout ── */
+.shell{display:flex;flex-direction:column;min-height:100vh}
+/* ── Header ── */
+.hdr{background:#fff;border-bottom:1px solid #e2e6ea;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{background:#1a3a5c;color:#fff;font-weight:700;font-size:13px;padding:5px 11px;border-radius:6px;letter-spacing:.3px}
+.hdr-center{display:flex;flex-direction:column;align-items:center}
+.hdr-title{font-size:15px;font-weight:600;color:#1a1a2e}
+.hdr-sub{font-size:11px;color:#6c757d;margin-top:1px}
+/* ── Tab bar ── */
+.tabbar{background:#fff;border-bottom:1px solid #e2e6ea;display:flex;gap:0;padding:0 20px}
+.navtab{padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;color:#6c757d;border-bottom:2px solid transparent;transition:all .15s}
+.navtab.active{color:#1a3a5c;border-bottom-color:#1a3a5c}
+.navtab:hover{color:#1a3a5c}
+/* ── Month pills ── */
+.month-bar{display:flex;gap:4px;align-items:center}
+.mpill{font-size:11px;padding:4px 9px;border:1px solid #dee2e6;border-radius:20px;cursor:pointer;background:#fff;color:#6c757d;transition:all .12s}
+.mpill.active{background:#1a3a5c;color:#fff;border-color:#1a3a5c}
+/* ── Content ── */
+.content{flex:1;padding:16px 20px;overflow:auto}
+.tab-pane{display:none}.tab-pane.active{display:block}
+/* ── Vision General ── */
+.vg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px}
+.card{background:#fff;border-radius:10px;border:1px solid #e2e6ea;overflow:hidden}
+.card-hdr{padding:10px 14px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:12px;font-weight:600;color:#495057;display:flex;align-items:center;gap:6px}
+.persp-tag{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
+.tag-fin{background:#e8f0fe;color:#1967d2}
+.tag-cli{background:#e6f4ea;color:#137333}
+.tag-pro{background:#fce8e6;color:#a50e0e}
+.tag-apr{background:#fef7e0;color:#b05e00}
+.vg-wrap{background:#fff;border-radius:10px;border:1px solid #e2e6ea;overflow:hidden}
+.vg-table{width:100%;border-collapse:collapse;table-layout:auto}
+.vg-table thead th{background:#f8f9fa;padding:9px 16px;font-size:11px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;white-space:nowrap;text-align:left}
+.vg-table thead th.num{text-align:right}
+.vg-table tbody td{padding:9px 16px;font-size:12.5px;vertical-align:middle;color:#111827}
+.vg-table tbody tr.data-row{border-bottom:1px solid #f3f4f6}
+.vg-table tbody tr.data-row:last-child{border-bottom:none}
+.vg-table tbody tr.data-row:hover{background:#fafafa}
+/* perspectiva separator row */
+.vg-table tr.g-hdr td{
+  padding:7px 16px;
+  font-size:11px;font-weight:700;letter-spacing:.05em;
+  border-top:1px solid #e5e7eb;
+  border-bottom:1px solid #e5e7eb;
+  background:#f8f9fa;
+}
+.vg-table tr.g-hdr.first td{border-top:none}
+/* left accent bar via pseudo-element substitute: use a colored span */
+.persp-pill{display:inline-flex;align-items:center;gap:6px;padding:2px 10px 2px 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.03em}
+.kpi-table{width:100%;border-collapse:collapse}
+.kpi-table th{background:#f8f9fa;padding:6px 10px;text-align:left;font-size:10px;font-weight:600;color:#6c757d;border-bottom:1px solid #f0f0f0;white-space:nowrap}
+.kpi-table td{padding:6px 10px;border-bottom:.5px solid #f5f5f5;font-size:12px;vertical-align:middle}
+.kpi-table tr:last-child td{border-bottom:none}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;align-items:center;gap:2px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.p-g{background:#e6f4ea;color:#137333}
+.p-y{background:#fef7e0;color:#b05e00}
+.p-r{background:#fce8e6;color:#a50e0e}
+.p-n{background:#f1f3f4;color:#5f6368}
+/* ── Progress ── */
+.prog{display:flex;align-items:center;gap:5px}
+.prog-bg{flex:1;height:5px;background:#e9ecef;border-radius:3px;overflow:hidden}
+.prog-fill{height:5px;border-radius:3px}
+/* ── Detalle ── */
+.det-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.det-toolbar select{padding:5px 8px;border:1px solid #dee2e6;border-radius:6px;font-size:12px;background:#fff;color:#1a1a2e;cursor:pointer}
+.view-toggle{display:flex;border:1px solid #dee2e6;border-radius:6px;overflow:hidden}
+.vbtn{padding:5px 10px;font-size:11px;cursor:pointer;background:#fff;color:#6c757d;border:none;border-right:1px solid #dee2e6}
+.vbtn:last-child{border-right:none}
+.vbtn.active{background:#1a3a5c;color:#fff}
+.det-card{background:#fff;border-radius:10px;border:1px solid #e2e6ea;overflow:hidden}
+.det-table{width:100%;border-collapse:collapse}
+.det-table th{background:#f8f9fa;padding:7px 10px;text-align:left;font-size:11px;font-weight:600;color:#6c757d;border-bottom:1px solid #e2e6ea;white-space:nowrap}
+.det-table td{padding:5px 10px;border-bottom:.5px solid #f5f5f5;font-size:12px;vertical-align:middle}
+.det-table tr:hover{background:#f8f9fa}
+.det-table tr.lvl-ger td:first-child{font-weight:700;color:#1a3a5c}
+.det-table tr.lvl-dir td:first-child{padding-left:24px;font-weight:600;color:#374151}
+.det-table tr.lvl-prj td:first-child{padding-left:44px;color:#6c757d}
+.expand-btn{cursor:pointer;background:none;border:none;padding:0 4px;font-size:12px;color:#6c757d;line-height:1}
+.saldo-bar{display:flex;align-items:center;gap:6px;min-width:100px}
+.saldo-bg{flex:1;height:5px;background:#e9ecef;border-radius:3px;overflow:hidden}
+.saldo-fill{height:5px;border-radius:3px;background:#1a3a5c}
+/* ── Legend ── */
+.legend{display:flex;gap:14px;font-size:11px;color:#6c757d;align-items:center;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:4px}
+.ldot{width:8px;height:8px;border-radius:50%;display:inline-block}
+/* ── Utilities ── */
+.section-title{font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+
+/* ── Análisis ── */
+.ana-tab{padding:5px 13px;font-size:12px;font-weight:500;border:1px solid #e5e7eb;border-radius:6px;background:#fff;color:#6b7280;cursor:pointer;transition:all .12s}
+.ana-tab.active{background:#1a3a5c;color:#fff;border-color:#1a3a5c}
+.ana-tab:hover:not(.active){background:#f3f4f6}
+.ana-table{width:100%;border-collapse:collapse}
+.ana-table thead th{background:#f8f9fa;padding:8px 14px;font-size:11px;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;white-space:nowrap;text-align:left}
+.ana-table thead th.nr{text-align:right}
+.ana-table thead th.nc{text-align:center}
+.ana-table tbody tr{border-bottom:1px solid #f3f4f6;transition:background .1s}
+.ana-table tbody tr:last-child{border-bottom:none}
+.ana-table tbody tr:hover{background:#f9fafb}
+.ana-table td{padding:8px 14px;font-size:12px;vertical-align:middle;color:#111827}
+.ana-table td.nr{text-align:right;font-variant-numeric:tabular-nums}
+.ana-table td.nc{text-align:center}
+.rank-badge{{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}}
+.bar-cell{{display:flex;align-items:center;gap:7px;min-width:120px}}
+.bar-outer{{flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;min-width:80px}}
+.bar-inner{{height:6px;border-radius:3px}}
+.cat-pill{{display:inline-block;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:600}}
+.cat-nc{{background:#eff6ff;color:#1d4ed8}}
+.cat-nn{{background:#f0fdf4;color:#15803d}}
+.ger-badge{{font-size:10px;padding:1px 6px;border-radius:4px;background:#f1f5f9;color:#475569;white-space:nowrap}}
+
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo">ISES</div>
+  <div class="hdr-center">
+    <div class="hdr-title">Dashboard Resultados Estratégicos 2026</div>
+    <div class="hdr-sub">Seguimiento de objetivos — valores en MCOP</div>
+  </div>
+  <div class="month-bar" id="monthBar"></div>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tabbar">
+  <div class="navtab active" onclick="switchTab('vg')"><i class="ti ti-layout-dashboard" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Visión General</div>
+  <div class="navtab" onclick="switchTab('det')"><i class="ti ti-list-details" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Detalle</div>
+  <div class="navtab" onclick="switchTab('ana')"><i class="ti ti-podium" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>Análisis</div>
+</nav>
+
+<!-- CONTENT -->
+<main class="content">
+
+<!-- PESTAÑA: VISIÓN GENERAL -->
+<div id="tab-vg" class="tab-pane active">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div class="legend">
+      <span><span class="ldot" style="background:#137333"></span>≥ 95% Cumplido</span>
+      <span><span class="ldot" style="background:#b05e00"></span>80–94% En riesgo</span>
+      <span><span class="ldot" style="background:#a50e0e"></span>&lt; 80% Crítico</span>
+      <span style="margin-left:8px;color:#d1d5db">|</span>
+      <span style="color:#9ca3af;font-size:11px">Valores monetarios en MCOP</span>
+    </div>
+  </div>
+
+  <div class="vg-wrap">
+    <table class="vg-table" id="vg-main-table">
+      <thead>
+        <tr>
+          <th style="min-width:0;width:auto">Indicador</th>
+          <th class="num" style="width:90px">Plan Año</th>
+          <th class="num" style="width:105px">Plan Mes Acum.</th>
+          <th class="num" style="width:105px">Real Mes Acum.</th>
+          <th style="text-align:center;width:105px">% Cumplimiento</th>
+          <th style="width:110px">Avance Año</th>
+        </tr>
+      </thead>
+      <tbody id="vg-body"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- PESTAÑA: DETALLE -->
+<div id="tab-det" class="tab-pane">
+
+  <div class="det-toolbar">
+    <select id="det-ind" onchange="renderDetalle()">
+      <option value="ing">O1 – Ingresos</option>
+      <option value="int">O2 – Ingresos Internacionales</option>
+      <option value="nc2">O3 – Nuevos Clientes / Negocios</option>
+      <option value="nc">O5 – Nivel de Contratación</option>
+    </select>
+    <select id="det-ger" onchange="renderDetalle()"><option value="">Todas las gerencias</option></select>
+    <select id="det-dir" onchange="renderDetalle()"><option value="">Todas las direcciones</option></select>
+    <div class="view-toggle" id="viewToggle">
+      <button class="vbtn active" onclick="setView('mes')" id="vbtn-mes">Mes</button>
+      <button class="vbtn" onclick="setView('acum')" id="vbtn-acum">Acumulado</button>
+      <button class="vbtn" onclick="setView('ambos')" id="vbtn-ambos">Mes + Acum.</button>
+    </div>
+  </div>
+
+  <div class="det-card">
+    <div id="det-content" style="overflow-x:auto"></div>
+  </div>
+
+</div>
+
+
+<!-- PESTAÑA: ANÁLISIS -->
+<div id="tab-ana" class="tab-pane">
+
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+  <div style="font-size:11px;color:#6b7280">Proyectos ordenados por mayor contribución acumulada ENE–MAY 2026 · valores en MCOP</div>
+  <div style="margin-left:auto;display:flex;gap:6px">
+    <button class="ana-tab active" onclick="setAnaTab('o1')" id="atab-o1">O1 Ingresos</button>
+    <button class="ana-tab" onclick="setAnaTab('o2')" id="atab-o2">O2 Internacional</button>
+    <button class="ana-tab" onclick="setAnaTab('o3')" id="atab-o3">O3 Nuevos Clientes</button>
+    <button class="ana-tab" onclick="setAnaTab('o5')" id="atab-o5">O5 Contratación</button>
+  </div>
+</div>
+
+<div id="ana-content"></div>
+
+</div>
+</main>
+</div>
+
+<script>
+const MESES=['ENE','FEB','MAR','ABR','MAY'];
+let curM=4; // MAY = index 4
+
+// ── DATA ────────────────────────────────────────────────────────────────────
+const ING_DATA=[{"nombre":"Grencia de Consultor\u00eda","vals":[3168179666,5172254924,5184420147,4043802595,4058409161],"dirs":[{"nombre":"DISE\u00d1OS ELECTRICOS","vals":[974679215,1573128443,1928233083,1204144512,1635966938],"projs":[{"id":"AFN24102-100","nombre":"AFINIA ADT5","vals":[143500669,82579258,90136736,84097590,296553536]},{"id":"EDM23136-101","nombre":"DISE\u00d1OS AT EDEMET","vals":[12384070,47458454,95556502,75284793,76881211]},{"id":"AFN23112-100","nombre":"Provisi\u00f3n AFN","vals":[194675582,188000000,196352381,175000000,175000000]},{"id":"AIR24100-100","nombre":"REVISI\u00d3N DE SOLICITUDES DE CONEXI\u00d3N DE PROY. DE TERCEROS AIR-E","vals":[0,0,-1497449,0,0]},{"id":"EDM23114-100","nombre":"EDEMET DISE\u00d1OS MTBT","vals":[183538659,248187556,642425156,249579411,274056989]},{"id":"EDH23115-100","nombre":"EDECHI DISE\u00d1OS MTBT","vals":[150800026,139753317,120502524,133777337,149312317]},{"id":"CEL24101-100","nombre":"Acuerdo de precios CELSIA Subestaciones","vals":[0,0,39405884,39617635,0]},{"id":"AFN24100-100","nombre":"AFINIA ADT6","vals":[75170432,307738003,21387450,32081175,10693725]},{"id":"ENS25100-100","nombre":"ENSA PANAM\u00c1 2","vals":[9940872,7952008,8073918,12806571,20800050]},{"id":"AIR24100-101","nombre":"REVISI\u00d3N DE SOLICITUDES DE CONEXI\u00d3N DE PROY. DE TERCEROS AIR-E II","vals":[0,0,17406843,11900000,8269111]},{"id":"UNA25100-100","nombre":"UNIVERSIDAD NACIONAL","vals":[148754329,357013946,427443139,214000000,378000000]},{"id":"AIR25105-100","nombre":"AIRE TRASNFORMADRES","vals":[55914576,194445900,271040000,176000000,246400000]}]},{"nombre":"ESTUDIOS ELECTRICOS","vals":[24572298,68095058,44896942,45932653,50732453],"projs":[{"id":"SIG26100-100","nombre":"SIGMA ENERGY CHILE","vals":[0,0,0,0,2046714]},{"id":"PER25100-100","nombre":"PROERCOL ESTUDIOS","vals":[0,37916015,9040120,11314636,11799166]},{"id":"EDM23114-101","nombre":"Estudios Conexi\u00f3n EDEMET","vals":[24572298,21528033,20963854,21702891,26739828]},{"id":"EDH23115-101","nombre":"Estudios Conexi\u00f3n EDECHI","vals":[0,8651010,14892968,12915126,10146745]}]},{"nombre":"INTERVENTOR\u00cdA","vals":[1514219159,1308752598,1477288370,1395682896,1490525544],"projs":[{"id":"CDN22200-100","nombre":"CONSORCIO ADISES","vals":[0,0,0,0,60465491]},{"id":"ENL23106-100","nombre":"SERVICIOS DE INSPECCI\u00d3N ENEL","vals":[455930305,100596294,0,0,0]},{"id":"EDM23136-100","nombre":"SUPERVISI\u00d3N EDEMET","vals":[408216775,437050479,420021677,458066921,475541058]},{"id":"EMS24103-100","nombre":"INTERVENTOR\u00cdA COMERCIAL EMSA","vals":[86787631,178544265,129197278,129205891,129205891]},{"id":"EMS23104-100","nombre":"EMSA SIKUANI","vals":[11095169,11095169,11095169,11095169,22190338]},{"id":"EMS23103-100","nombre":"EMSA ESMERALDA","vals":[11081711,16622566,33245132,44326843,110817108]},{"id":"ENL24101-100","nombre":"SUPERVISI\u00d3N Y ASEGURAMIENTO DE PRUEBAS ENEL","vals":[38355816,112128828,241028036,39216000,70000000]},{"id":"EDH23137-100","nombre":"SUPERVISI\u00d3N EDECHI","vals":[72522200,72617448,70795753,73597841,76510966]},{"id":"PAZ22117-100","nombre":"INTERVENTOR\u00cdA JURAD\u00d3","vals":[-25847436,0,0,0,0]},{"id":"FID18100-100","nombre":"FIDUPREVISORA TULUN\u00cd","vals":[0,0,0,70051292,0]},{"id":"CEL25103-100","nombre":"CELSIA","vals":[414087230,380097549,361840891,304100596,347363320]},{"id":"CEC25101-100","nombre":"CEDELCA BOL\u00cdVAR","vals":[0,0,0,0,29665493]},{"id":"DIS25103-100","nombre":"INTERVENTOR\u00cdA DISPAC AOM","vals":[41989758,0,0,17495732,46119758]},{"id":"FID25101-100","nombre":"Interventor\u00eda FTSP","vals":[0,0,161463074,191460013,94112823]},{"id":"TEB25104-100","nombre":"INTERVENTOR\u00cdA TEBSA CAMBIO DE TERNA","vals":[0,0,18561649,57066596,28533298]},{"id":"DIS25102-100","nombre":"INT BOJAY\u00c1 DISPAC","vals":[0,0,30039710,0,0]}]},{"nombre":"SOLUCIONES ENERG\u00c9TICAS","vals":[100994807,41201616,77816360,100069264,108252644],"projs":[{"id":"JMC24100-101","nombre":"CAMBIO DE COMERCIALIZADOR MERCADO REGULADO","vals":[43702298,21213785,20069264,20069264,20513618]},{"id":"JMC24100-106","nombre":"SISTEMAS FOTOVOLTAICOS PARA TIENDAS ARA","vals":[14790000,1900000,0,0,12000000]},{"id":"JMC24100-102","nombre":"INM\u00d3TICA - ARA","vals":[29349309,43764177,92041677,80000000,75739026]},{"id":"STD25101-100","nombre":"SUMINISTRO Y ADECUACI\u00d3N EQUIPOS OLIMPICA","vals":[0,0,0,0,0]},{"id":"GEB25100-100","nombre":"Grupo de Energ\u00eda Bogot\u00e1 S.A E.S.P","vals":[0,-25676346,-34294581,0,0]},{"id":"RUI25100-100","nombre":"CAMBIO DE MEDIDOR EN FRONTERA COMERCIAL","vals":[13153200,0,0,0,0]}]},{"nombre":"CONSULTOR\u00cdA","vals":[-270800602,1348123442,856992781,378313818,195809739],"projs":[{"id":"EDF24100-100","nombre":"CONSULTORIA SG SST","vals":[0,11684998,11570001,11570000,9500000]},{"id":"1075","nombre":"1075 - ISELTEC","vals":[-625144415,715971062,5705,0,0]},{"id":"XMC25100-100","nombre":"XM VERIFICACI\u00d3N PLANES DE INVERSI\u00d3N","vals":[233691151,96695761,630511144,166178428,109827857]},{"id":"CRE25100-100","nombre":"NORMATIVA REDES DISTRIBUCI\u00d3N","vals":[0,347433115,-146362613,46739875,15788165]},{"id":"AIR25105-102","nombre":"LEV. TRANSFORMADORES CONSULTORIA","vals":[120652662,176338506,361268543,153825515,60693717]}]},{"nombre":"GESTI\u00d3N DE ACTIVOS","vals":[824514788,832953767,799192611,919659452,577121842],"projs":[{"id":"AFN24103-100","nombre":"BDA AFINIA III","vals":[483701903,608647481,482324445,455345173,387551833]},{"id":"CER24100-100","nombre":"LEVANTAMIENTO LN CERREJON","vals":[0,0,0,-6732328,0]},{"id":"ESA25101-100","nombre":"Informaci\u00f3n de redes y clientes ESSA","vals":[96779604,102944305,62016991,71769718,90471312]},{"id":"AFN24100-101","nombre":"AFINIA ADT6 AMBIENTAL","vals":[20930230,0,0,0,0]},{"id":"AIR25103-100","nombre":"Actualizaci\u00f3n del Inventario de Alumbrado P\u00fablico","vals":[150207372,55763532,-69906960,65971799,23148000]},{"id":"AIR25105-101","nombre":"Levantamiento  Transformadores","vals":[72895679,65598449,324758135,333305089,75950698]}]}]},{"nombre":"Grencia de Operaciones T\u00e9cnicas y Comerciales","vals":[6742842025,6848753358,7007493015,6841635340,6953932709],"dirs":[{"nombre":"OTC ENERG\u00cdA","vals":[4420734429,4197114629,4441843504,4525897820,4599581775],"projs":[{"id":"AFN23200-100","nombre":"CONSORCIO BMISES","vals":[667705135,600238272,725400807,653012138,727023752]},{"id":"AIR22200-100","nombre":"SCR AIR-E","vals":[979121613,1148196048,1179364519,1144831742,1099994037]},{"id":"CEN24100-100","nombre":"ATC CENS","vals":[111210531,123156735,105252628,125740200,124406617]},{"id":"AIR22100-100","nombre":"CENSO BMT","vals":[200368760,0,61690,0,0]},{"id":"ENE25100-100","nombre":"LIMPIEZA BRECHA DE L\u00cdNEA HONDURAS","vals":[0,-165147586,0,0,0]},{"id":"AIR25104-100","nombre":"CENSOBMT","vals":[200368760,0,61690,0,0]},{"id":"AIR22200-101","nombre":"SCR Norte & Centro","vals":[1311959630,1532847653,1583932406,1609117780,1618343380]},{"id":"EHL25100-100","nombre":"SCR-LR- ELECTROHUILA","vals":[950000000,957823507,847769763,993195961,1029813988]}]},{"nombre":"OTC AGUA Y GEST. SOCIAL","vals":[1278854044,1413460093,1211114961,1136551110,1065628401],"projs":[{"id":"AAA23132-100","nombre":"IRREGULARIDADES AGUA","vals":[669888421,634396170,563467976,470772262,498707968]},{"id":"AAA24100-100","nombre":"Gesti\u00f3n Social Triple A","vals":[50703920,50960751,50783199,51167520,50935720]},{"id":"ACU24100-100","nombre":"LECTURA ACUACAR","vals":[237310073,293007290,276576204,282711141,305992170]},{"id":"ACU24101-100","nombre":"GESTI\u00d3N DE P\u00c9RDIDAS ANC","vals":[245154872,345551611,230348678,255017017,136681189]},{"id":"EMS24105-100","nombre":"GESTION SOCIAL EMSA","vals":[52023062,52023062,52023062,52023062,52023062]},{"id":"ESA24100-100","nombre":"Gestion Social ESSA","vals":[23773696,37521209,37915842,24860108,21288292]}]},{"nombre":"SERVICIOS OUTSOURCING","vals":[1043253552,1238178636,1354534551,1179186410,1288722534],"projs":[{"id":"AFN23116-100","nombre":"CENTRAL ESCRITOS AFINIA","vals":[385704794,472324158,522121196,426970027,502162917]},{"id":"AIR22112-100","nombre":"CENTRAL ESCRITOS AIRE","vals":[344194077,413820093,516826206,449605128,483764360]},{"id":"EDH22102-100","nombre":"Servicios Catalogos EDECHI","vals":[34206737,96467276,35427469,63277766,27977763]},{"id":"EDM22103-100","nombre":"Servicios Catalogos EDEMET","vals":[279147945,255567109,280159680,239333489,274817494]}]}]},{"nombre":"Grencia de TI","vals":[78773502,78963030,73426606,81176889,83154383],"dirs":[{"nombre":"TI","vals":[78773502,78963030,73426606,81176889,83154383],"projs":[{"id":"EDM22103-101","nombre":"9128 010 - SOPORTE REDMINE EDM/EDC","vals":[957622,747950,966811,856046,977417]},{"id":"AIR23100-100","nombre":"9180 029 - SERV APP FORMAP AUDITORIA","vals":[37260000,37260000,36990000,36315000,34290000]},{"id":"AFN24101-100","nombre":"AFINIA - SAM HERRAMIENTAS FORMAP Y SAIC (Nuevo Contrato)","vals":[17797080,16735896,16056499,16058780,16058780]},{"id":"TRS24100-100","nombre":"TRASH GLOBAL - FORMAP","vals":[923200,844000,844000,844000,1455744]},{"id":"GRS24100-100","nombre":"GESTI\u00d3N RENOVADORA - FORMAP","vals":[905600,2025184,1139296,2552736,1160448]},{"id":"AIR25102-100","nombre":"RENTING EQUIPOS DE OFIM\u00c1TICA","vals":[3920000,3920000,0,0,0]},{"id":"JMC24100-100","nombre":"AVI \u2013 TIENDAS ARA","vals":[17010001,16980000,16980000,19475273,18424475]},{"id":"UTE25100-100","nombre":"UT ENERSOL","vals":[0,450000,450000,540000,540000]},{"id":"AFN26106-100","nombre":"HERAMIENTAS FORMAP y SAIC ATENEA","vals":[0,0,0,4535054,10247518]}]}]}];
+const INT_DATA=[{"nombre":"GERENCIA DE OPERACIONES TECNICAS Y COMERCIALES","vals":[907806191,968689495,937459472,942470469,923232696],"dirs":[{"nombre":"DIRECCION DE SERVICIOS DE OUTSOURCING","vals":[907806191,968689495,937459472,942470469,923232696],"projs":[{"id":"EDH22102-100 - Servicios Catalogos EDECHI","nombre":"EDH22102-100 - Servicios Catalogos EDECHI","vals":[150211241,191551389,131993442,189244152,156219785]},{"id":"EDM22103-100 - Servicios Catalogos EDEMET","nombre":"EDM22103-100 - Servicios Catalogos EDEMET","vals":[757594950,777138106,805466030,753226317,767012911]}]}]},{"nombre":"GERENCIA DE CONSULTORIA","vals":[1639309266,4111582322,4958841007,4276532246,4666747174],"dirs":[{"nombre":"DIRECCION DE DISE\u00d1OS ELECTRICOS","vals":[1105152786,1881464606,2802056575,2172441102,2179784721],"projs":[{"id":"EDH23115-100 - EDECHI DISE\u00d1OS MTBT","nombre":"EDH23115-100 - EDECHI DISE\u00d1OS MTBT","vals":[173424335,463977678,1029716112,403522259,471967236]},{"id":"EDM23114-100 - EDEMET DISE\u00d1OS MTBT","nombre":"EDM23114-100 - EDEMET DISE\u00d1OS MTBT","vals":[183538659,615264874,909048538,1007434372,1064717502]},{"id":"EDM23136-101 - DISE\u00d1OS AT EDEMET","nombre":"EDM23136-101 - DISE\u00d1OS AT EDEMET","vals":[709267331,769109854,842042586,748677899,618562826]},{"id":"ENS22104-100 - ENSA PANAM\u00c1","nombre":"ENS22104-100 - ENSA PANAM\u00c1","vals":[124434,0,0,0,0]},{"id":"ENS25100-100 - ENSA PANAM\u00c1 II","nombre":"ENS25100-100 - ENSA PANAM\u00c1 II","vals":[38798027,33112199,21249339,12806571,24537157]}]},{"nombre":"DIRECCION ESTUDIOS ELECTRICOS","vals":[26269070,81020411,75466171,81305047,87272875],"projs":[{"id":"EDH23115-101 - Estudios Conexi\u00f3n EDECHI","nombre":"EDH23115-101 - Estudios Conexi\u00f3n EDECHI","vals":[0,8651010,14892968,17746482,15518760]},{"id":"EDM23114-101 - Estudios Conexi\u00f3n EDEMET","nombre":"EDM23114-101 - Estudios Conexi\u00f3n EDEMET","vals":[26269070,72369401,60573203,63558565,71754115]}]},{"nombre":"DIRECCION DE INTERVENTORIA","vals":[507887410,1471369019,1532814643,1573905218,1881748311],"projs":[{"id":"EDH23137-100 - SUPERVISI\u00d3N EDECHI","nombre":"EDH23137-100 - SUPERVISI\u00d3N EDECHI","vals":[99670635,217988908,209337667,218322274,261418292]},{"id":"EDM23136-100 - SUPERVISI\u00d3N EDEMET","nombre":"EDM23136-100 - SUPERVISI\u00d3N EDEMET","vals":[408216775,1253380111,1323476976,1355582944,1620330019]}]},{"nombre":"DIRECCION DE SERVICIOS DE CONSULTORIA","vals":[0,677728286,548503618,448880880,517941267],"projs":[{"id":"CRE25100-100 - CREE Normativa Distribuci\u00f3n","nombre":"CRE25100-100 - CREE Normativa Distribuci\u00f3n","vals":[0,677728286,548503618,448880880,517941267]}]}]},{"nombre":"GERENCIA TI","vals":[3488691,3278959,3072850,2962163,2921777],"dirs":[{"nombre":"GERENCIA TI","vals":[3488691,3278959,3072850,2962163,2921777],"projs":[{"id":"EDM22103-101 - Soporte REDMINE EDEMET","nombre":"EDM22103-101 - Soporte REDMINE EDEMET","vals":[3488691,3278959,3072850,2962163,2921777]}]}]}];
+const NC2_DATA=[{"nombre":"ISES","vals":[1703731268,2742843550,2993886531,1769764054,1686050247],"dirs":[{"nombre":"GESTION DE ACTIVOS ","vals":[0,0,37915842,0,0],"projs":[{"id":"ESA25101-100","nombre":"PRESTACI\u00d3N DEL SERVICIO PARA LA SOSTENIBILIDA","categoria":"Nuevos Clientes","vals":[0,0,37915842,0,0]}]},{"nombre":"OUTSOURCING","vals":[18809791,33877221,32721131,24180749,0],"projs":[{"id":"EDM22103-100","nombre":"CONTRATACI\u00d3N DEL CAT\u00c1LOGO DE SERVICIOS DE LA ","categoria":"Nuevos Negocios","vals":[18809791,33877221,32721131,24180749,0]}]},{"nombre":"DISE\u00d1OS","vals":[487543289,357013946,427443139,459469041,454881211],"projs":[{"id":"EDM23136-101","nombre":"Servicio de Dise\u00f1o e Ingenier\u00eda de Alta Tensi","categoria":"Nuevos Negocios","vals":[0,0,0,0,76881211]},{"id":"UNA25100-100","nombre":"","categoria":"Nuevos Clientes","vals":[487543289,357013946,427443139,459469041,378000000]}]},{"nombre":"SOLUCIONES ENERGETICAS","vals":[13153200,0,112110941,80000000,75739026],"projs":[{"id":"JMC24100-101","nombre":"OFERTA T\u00c9CNICA \u2013 ECON\u00d3MICA DE SERVICIOS CAMBI","categoria":"Nuevos Negocios","vals":[0,0,20069264,0,0]},{"id":"JMC24100-102","nombre":"OFERTA T\u00c9CNICA \u2013 ECON\u00d3MICA DE SERVICIOS INM\u00d3T","categoria":"Nuevos Negocios","vals":[0,0,92041677,80000000,75739026]},{"id":"RUI25100-100","nombre":"CAMBIO DE MEDIDOR EN FRONTERA COMERCIAL","categoria":"Nuevos Clientes","vals":[13153200,0,0,0,0]}]},{"nombre":"CONSULTOR\u00cdA","vals":[234224988,444128876,630511144,212918303,125616022],"projs":[{"id":"CRE25100-100","nombre":"","categoria":"Nuevos Clientes","vals":[533837,347433115,0,46739875,15788165]},{"id":"XMC25100-100","nombre":"","categoria":"Nuevos Clientes","vals":[233691151,96695761,630511144,166178428,109827857]}]},{"nombre":"OTC ENERGIA","vals":[950000000,1907823507,1753184334,993195961,1029813988],"projs":[{"id":"ELH25100-100","nombre":"","categoria":"Nuevos Clientes","vals":[950000000,1907823507,1753184334,993195961,1029813988]}]}]}];
+const NC_DATA=[{"nombre":"CONSULTOR\u00cdA","saldo":20715902047,"dirs":[{"nombre":"CONSULTOR\u00cdA","saldo":8338671002,"projs":[{"id":"EDF24100-100","nombre":"Oferta COE-2024-MERC_COT-071","saldo":0},{"id":"XMC25100-100","nombre":"4620005695","saldo":8338671002},{"id":"UTI24100-100","nombre":"116231-063-2024","saldo":0},{"id":"AIR25105-102","nombre":"C01132025","saldo":0},{"id":"CRE25100-100","nombre":"CPI-CREE-03-2025","saldo":0}]},{"nombre":"DISE\u00d1OS ELECTRICOS","saldo":66108198,"projs":[{"id":"AFN23112-100","nombre":"4123000040","saldo":0},{"id":"AFN24100-100","nombre":"4124000005","saldo":0},{"id":"AIR24100-101","nombre":"5626000008","saldo":0},{"id":"CEL23141-100","nombre":"Doc4167581698","saldo":26170776},{"id":"CEL24101-100","nombre":"CW2263077\u2013 2024","saldo":0},{"id":"CEL25104-100","nombre":"Doc4902268383","saldo":0},{"id":"EDH23137-101","nombre":"4123000113","saldo":0},{"id":"EDM23136-101","nombre":"4123000112","saldo":0},{"id":"ENS25100-100","nombre":"VTSS-DC-015-2025","saldo":39937422},{"id":"PDTE","nombre":"ISACORP-0062","saldo":0},{"id":"UNA25100-100","nombre":"OSE No. 267","saldo":0},{"id":"MSQ26100-100","nombre":"MSQ-CMIC-026-2026","saldo":0},{"id":"TEB26105-100","nombre":"T47128","saldo":0},{"id":"AFN23138-100","nombre":"4123000061","saldo":0},{"id":"AFN24102-100","nombre":"4124000095","saldo":0},{"id":"AIR24100-100","nombre":"5624000163","saldo":0},{"id":"CEL24102-100","nombre":"4000111873","saldo":0},{"id":"TEC23125-100","nombre":"CW259098","saldo":0},{"id":"VEC24100-100","nombre":"BF42011E-60B5-4CB0-869C-FF2058E92A6D","saldo":0},{"id":"VEC25103-100","nombre":"VCHD 2222302","saldo":0},{"id":"AIR25105-100","nombre":"C01132025","saldo":0},{"id":"EDH23115-100","nombre":"4123000028","saldo":0},{"id":"EDM23114-100","nombre":"4123000027","saldo":0},{"id":"GOI25100-100","nombre":"4500011575","saldo":0}]},{"nombre":"ESTUDIOS ELECTRICOS","saldo":0,"projs":[{"id":"AFN24104-100","nombre":"4124000136","saldo":0},{"id":"PER25100-100","nombre":"COE-2025-MERC_COT-002","saldo":0},{"id":"SIG26100-100","nombre":"N\u00b0 370122025","saldo":0},{"id":"COX23119-100","nombre":"COE-2023-MERC_COT-063 ","saldo":0},{"id":"GRE24100-100","nombre":"D-131-2023/D-132-2023/D-132-2023/D-227-2024","saldo":0},{"id":"VEC25104-100","nombre":"OC-VCHD 2222352","saldo":0},{"id":"EDH23115-101","nombre":"4123000028","saldo":0},{"id":"EDM23114-101","nombre":"4123000027","saldo":0}]},{"nombre":"GESTION DE ACTIVOS ","saldo":644585167,"projs":[{"id":"AFN24100-101","nombre":"4124000005","saldo":0},{"id":"AFN24103-100","nombre":"4124000133","saldo":0},{"id":"ESA25101-100","nombre":"CW332291","saldo":644585167},{"id":"AIR25103-100","nombre":"C00492025","saldo":0},{"id":"CER24100-100","nombre":"590247","saldo":0},{"id":"AIR25105-101 ","nombre":"C01132025","saldo":0}]},{"nombre":"INTERVENTORIA","saldo":10796153289,"projs":[{"id":"CDN22200-100","nombre":"450-2022","saldo":3484337826},{"id":"CEC25101-100","nombre":"0059-2025","saldo":120542432},{"id":"CEL25103-100","nombre":"016-2025","saldo":6333666332},{"id":"DIS25103-100","nombre":"DG-086-2025","saldo":0},{"id":"EDH23137-100","nombre":"4123000113","saldo":0},{"id":"EDM23136-100","nombre":"4123000112","saldo":0},{"id":"EMS23103-100","nombre":"4500009120","saldo":0},{"id":"EMS23104-100","nombre":"4500009122","saldo":0},{"id":"EMS24103-100","nombre":"4500010373","saldo":0},{"id":"ENL24101-100","nombre":"JA10157371","saldo":0},{"id":"MDP25100-100","nombre":"007-PAUE-2024","saldo":736264493},{"id":"MMN25100-100","nombre":"GGC-1522-2025","saldo":73974355},{"id":"CEO21103-100","nombre":"GT-024-2021","saldo":0},{"id":"CEO21104-100","nombre":"GT-025-2021","saldo":0},{"id":"DIS25102-100","nombre":"DG-058-2025","saldo":0},{"id":"ELH19100-100","nombre":"359 - 2019","saldo":0},{"id":"ENL23106-100","nombre":"JA10125524","saldo":0},{"id":"ENL25102-100","nombre":"4501915349","saldo":0},{"id":"EPM24100-100","nombre":"CW283049","saldo":0},{"id":"FID18100-100","nombre":"3-1-77506-002-2018_7","saldo":0},{"id":"FID25100-100","nombre":"IA-002-2025-FENOGE","saldo":0},{"id":"MAV24100-100","nombre":"COE-2023-MERC_COT-142","saldo":0},{"id":"MMN20103-100","nombre":"GGC-428-2020","saldo":0},{"id":"PAZ22117-100","nombre":"57833-PTSP-066-2022","saldo":0},{"id":"TEB24101-100","nombre":"T43332/T44880","saldo":0},{"id":"MMN25101-100","nombre":"GGC-2089-2025","saldo":47367851},{"id":"7180-026","nombre":"C01762021 ","saldo":0},{"id":"CEC25100-100","nombre":"0039-2025","saldo":0},{"id":"EMS23102-100","nombre":"4500009119","saldo":0},{"id":"FID25101-100","nombre":"57833 \u2013 FTSP \u2013 152 -2025","saldo":0},{"id":"TEB25104-100","nombre":"T46091/T46989","saldo":0}]},{"nombre":"SOL.ENERGETICAS","saldo":870384391,"projs":[{"id":"JMC24100-101","nombre":"4400171911 - 4400171913","saldo":0},{"id":"JMC24100-102","nombre":"COE-2024-MERC_COT-061","saldo":0},{"id":"JMC24100-106","nombre":"COE-2024-MERC_COT-065","saldo":134900000},{"id":"BIT25100-100","nombre":"OCBIAS-000000501","saldo":0},{"id":"GEB25100-100","nombre":"CW2263636","saldo":0},{"id":"JMC24100-103","nombre":"COE-2024-MERC_COT-046","saldo":0},{"id":"OIM25100-100","nombre":"PSPJ 4388 de 2025 SVD-002","saldo":0},{"id":"RUI25100-100","nombre":"OC 1725\nOC 1726\nOC 1727\nOC 1889\nOC 1893","saldo":0},{"id":"VAT25102-100","nombre":"OS 00021129","saldo":0},{"id":"VAT25102-101","nombre":"OS 00021092","saldo":0},{"id":"LUT26100-100","nombre":"(en blanco)","saldo":735484391},{"id":"STD25101-100","nombre":"SP39- SP40- SP41- SP42- SP43- SP44- SP45- SP4","saldo":0}]}]},{"nombre":"OPERACIONES TECNICAS Y COMERCIALES","saldo":42932105226,"dirs":[{"nombre":"OTC AGUA Y GESTI\u00d3N SOCIAL","saldo":1281962007,"projs":[{"id":"AAA23132-100","nombre":"2023-86","saldo":1231387465},{"id":"AAA24100-100","nombre":"IAO-01-2024","saldo":19628929},{"id":"ACU24100-100","nombre":"008-2024","saldo":0},{"id":"ACU24101-100","nombre":"042-2024","saldo":0},{"id":"EMS24105-100","nombre":"4500010727","saldo":0},{"id":"ESA24100-100","nombre":"CW319163","saldo":30945613}]},{"nombre":"OTC ENERGIA","saldo":39562877624,"projs":[{"id":"AFN23200-100","nombre":"4123000089","saldo":0},{"id":"CEN24100-100","nombre":"CW309112","saldo":0},{"id":"ELH25100-100","nombre":"No. 227/2025","saldo":39562877624},{"id":"AIR24101-100","nombre":"(en blanco)","saldo":0},{"id":"AIR25104-100","nombre":"C02232022","saldo":0},{"id":"ENE25100-100","nombre":"082/2025","saldo":0},{"id":"IGL25100-101","nombre":"OC-004-3-V1","saldo":0},{"id":"AIR22200-100","nombre":"C02232022","saldo":0},{"id":"AIR22200-101","nombre":"C02232022","saldo":0}]},{"nombre":"SERVICIOS DE OUTSOURCING","saldo":2087265595,"projs":[{"id":"AFN23116-100","nombre":"4123000083 /4124000039/4125000047","saldo":1139256664},{"id":"AIR22112-100","nombre":"C01922022","saldo":0},{"id":"EDH22102-100","nombre":"4122000001","saldo":189601786},{"id":"EDM22103-100","nombre":"4122000002","saldo":758407145}]}]},{"nombre":"TI","saldo":520071473,"dirs":[{"nombre":"DESARROLLO DE SOFTWARE","saldo":520071473,"projs":[{"id":"AFN24101-100","nombre":"4124000043","saldo":482433011},{"id":"AFN26106-100","nombre":"4126000028","saldo":0},{"id":"AIR23100-100","nombre":"5623000107","saldo":0},{"id":"CEN26100-100","nombre":"CW380135 ","saldo":0},{"id":"EDH22102-101","nombre":"4122000001","saldo":0},{"id":"EDM22103-101","nombre":"4122000002","saldo":1878582},{"id":"GRS24100-100","nombre":"COE-2024-MERC_COT-102","saldo":0},{"id":"JMC24100-100","nombre":"COE-2024-MERC_COT-036-V2","saldo":35759880},{"id":"TRS24100-100","nombre":"COE-2024-MERC_COT-110","saldo":0},{"id":"AIR25102-100","nombre":"5625000096","saldo":0},{"id":"ARC24100-100","nombre":"COE-2023-MERC_COT-160","saldo":0},{"id":"UTE25100-100","nombre":"OC EN051-2025 -OC EN052-2025 - OC EN053-2025 ","saldo":0}]}]}];
+
+// ── VISION GENERAL DATA ─────────────────────────────────────────────────────
+// Plan mes acumulado (MCOP)
+const PM={
+  O1:[10813.6,22406.0,34765.1,47232.0,57430.0],
+  O2:[2047.0,4137.0,5840.0,6619.0,7386.5],
+  O3:[1691.4,4433.0,6924.0,8693.0,10035.5],
+  O4:[null,null,null,null,0.10722],
+  O5:[null,null,null,null,233413.0],
+  O6:[null,null,null,null,0.9363],
+  O7:[null,null,null,null,4.781],
+  O8:[null,null,null,null,0.90],
+  O9:[0,0,0,0,0],
+  O10:[null,null,null,null,null]
+};
+const RM={
+  O1:[9989.8,22089.8,34355.1,45321.7,56417.2],
+  O2:[1176.2,2859.6,4423.0,5810.9,7240.5],
+  O3:[1703.7,4446.6,7440.5,9210.2,10896.3],
+  O4:[null,null,null,null,0.0835],
+  O5:[null,null,null,null,64168.1],
+  O6:[null,null,null,null,0.9113],
+  O7:[null,null,null,null,2.994],
+  O8:[null,null,null,null,null],
+  O9:[0,0,0,0,0],
+  O10:[null,null,null,null,null]
+};
+const PA={O1:116707,O2:21343,O3:21723,O4:0.0774,O5:233413,O6:0.9363,O7:4.781,O8:0.90,O9:0,O10:null};
+
+const INDS_FIN=[
+  {id:'O1',n:'O1 – Ingresos',fmt:'M'},
+  {id:'O2',n:'O2 – Ingresos Internacionales',fmt:'M'},
+  {id:'O3',n:'O3 – Ingresos nuevos clientes/negocios',fmt:'M'},
+  {id:'O4',n:'O4 – Margen',fmt:'P'},
+  {id:'O5',n:'O5 – Nivel de Contratación',fmt:'M'}
+];
+const INDS_CLI=[{id:'O6',n:'O6 – Satisfacción del cliente',fmt:'P'}];
+const INDS_PRO=[{id:'O7',n:'O7 – Eficiencia',fmt:'M3'},{id:'O8',n:'O8 – SIG',fmt:'P'}];
+const INDS_APR=[{id:'O9',n:'O9 – Accidentes graves (mes)',fmt:'N'},{id:'O10',n:'O10 – Clima laboral',fmt:'P'}];
+
+// ── UTILITIES ───────────────────────────────────────────────────────────────
+// Todos los valores monetarios se muestran en MCOP con separador de miles
+function mcop(v){
+  // v en COP → convierte a MCOP y formatea con separador
+  if(v===null||v===undefined||isNaN(v))return '—';
+  const m=v/1e6;
+  return m.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1});
+}
+function mcopSmall(v){
+  // para valores que ya están en MCOP (plan año de la VG)
+  if(v===null||v===undefined||isNaN(v))return '—';
+  return v.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1});
+}
+function fmtV(v,fmt){
+  // PM y RM ya vienen en MCOP, usar mcopSmall directamente
+  if(v===null||v===undefined)return '—';
+  if(fmt==='M')return mcopSmall(v);
+  if(fmt==='M3')return v.toLocaleString('es-CO',{minimumFractionDigits:3,maximumFractionDigits:3});
+  if(fmt==='P')return (v*100).toFixed(2)+'%';
+  if(fmt==='N')return Math.round(v).toLocaleString('es-CO');
+  return String(v);
+}
+function fmtPA(v,fmt){
+  // Plan Año: valores ya en MCOP (excepto P y N)
+  if(v===null||v===undefined)return '—';
+  if(fmt==='M')return mcopSmall(v);
+  if(fmt==='M3'){return v.toLocaleString('es-CO',{minimumFractionDigits:3,maximumFractionDigits:3});}
+  if(fmt==='P')return (v*100).toFixed(2)+'%';
+  if(fmt==='N')return Math.round(v).toLocaleString('es-CO');
+  return String(v);
+}
+function fmtMCOP(v){
+  // Detalle: v en COP → MCOP
+  if(v===null||v===undefined||isNaN(v))return '—';
+  const m=v/1e6;
+  return m.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1});
+}
+function fmtMCOP2(v){return fmtMCOP(v);}
+function pClass(cu){
+  if(cu===null||cu===undefined)return 'pill p-n';
+  if(cu>=0.95)return 'pill p-g';
+  if(cu>=0.80)return 'pill p-y';
+  return 'pill p-r';
+}
+function pText(cu){
+  if(cu===null||cu===undefined)return 'N/D';
+  const ic=cu>=0.95?'✓':cu>=0.80?'⚠':'✗';
+  return ic+' '+(cu*100).toFixed(1)+'%';
+}
+function avBar(av,clr){
+  if(av===null||av===undefined)return '<span style="font-size:11px;color:#aaa">N/D</span>';
+  const pct=Math.min(av*100,100);
+  const c=clr||(av>=0.95?'#137333':av>=0.80?'#b05e00':'#a50e0e');
+  return `<div class="prog"><div class="prog-bg"><div class="prog-fill" style="width:${pct.toFixed(0)}%;background:${c}"></div></div><span style="font-size:11px;min-width:30px;text-align:right">${(av*100).toFixed(0)}%</span></div>`;
+}
+
+// ── MONTH BAR ───────────────────────────────────────────────────────────────
+function buildMonthBar(){
+  const bar=document.getElementById('monthBar');
+  bar.innerHTML=MESES.map((m,i)=>`<button class="mpill${i===curM?' active':''}" onclick="setMonth(${i})">${m[0]+m.slice(1).toLowerCase()}</button>`).join('');
+}
+function setMonth(i){curM=i;buildMonthBar();renderVG();if(document.getElementById('tab-det').classList.contains('active'))renderDetalle();}
+
+// ── VISION GENERAL ──────────────────────────────────────────────────────────
+function renderVG(){
+  const GROUPS=[
+    {label:'Financiero',      icon:'ti-trending-up', bg:'#eff6ff',fg:'#1d4ed8',inds:INDS_FIN},
+    {label:'Clientes',        icon:'ti-users',        bg:'#f0fdf4',fg:'#15803d',inds:INDS_CLI},
+    {label:'Procesos',        icon:'ti-settings-2',   bg:'#fef2f2',fg:'#b91c1c',inds:INDS_PRO},
+    {label:'Aprendizaje, Formación y Crecimiento',icon:'ti-school',bg:'#fffbeb',fg:'#b45309',inds:INDS_APR},
+  ];
+  let h='';
+  GROUPS.forEach((g,gi)=>{
+    h+=`<tr class="g-hdr${gi===0?' first':''}">
+      <td colspan="6">
+        <span class="persp-pill" style="background:${g.bg};color:${g.fg}">
+          <i class="ti ${g.icon}" style="font-size:12px"></i>${g.label}
+        </span>
+      </td>
+    </tr>`;
+    g.inds.forEach((ind,ii)=>{
+      const pm=PM[ind.id][curM], rm=RM[ind.id][curM];
+      const cu=(pm!==null&&pm!==0&&rm!==null)?rm/pm:null;
+      const av=(PA[ind.id]&&PA[ind.id]!==0&&rm!==null)?rm/PA[ind.id]:null;
+      const isLast=(ii===g.inds.length-1);
+      h+=`<tr class="data-row" style="${isLast?'border-bottom:none':''}">
+        <td style="padding-left:20px;color:#374151">${ind.n}</td>
+        <td class="num" style="color:#6b7280">${fmtPA(PA[ind.id],ind.fmt)}</td>
+        <td class="num" style="color:#6b7280">${fmtV(pm,ind.fmt)}</td>
+        <td class="num" style="font-weight:600;color:#111827">${fmtV(rm,ind.fmt)}</td>
+        <td style="text-align:center"><span class="${pClass(cu)}">${pText(cu)}</span></td>
+        <td>${avBar(av)}</td>
+      </tr>`;
+    });
+  });
+  document.getElementById('vg-body').innerHTML=h;
+}
+
+// ── TAB SWITCH ──────────────────────────────────────────────────────────────
+function switchTab(t){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.navtab').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(t==='det')renderDetalle();
+  if(t==='ana')renderAna();
+}
+
+// ── DETALLE ──────────────────────────────────────────────────────────────────
+let detView='mes';
+const EXPANDED={};
+
+function setView(v){
+  detView=v;
+  ['mes','acum','ambos'].forEach(x=>{
+    document.getElementById('vbtn-'+x).classList.toggle('active',x===v);
+  });
+  renderDetalle();
+}
+
+function getDataset(){
+  const ind=document.getElementById('det-ind').value;
+  if(ind==='ing')return ING_DATA;
+  if(ind==='int')return INT_DATA;
+  if(ind==='nc2')return NC2_DATA;
+  if(ind==='nc')return NC_DATA;
+}
+
+function getType(){return document.getElementById('det-ind').value;}
+
+function updateFilters(){
+  const ds=getDataset(); const type=getType();
+  const gerSel=document.getElementById('det-ger');
+  const dirSel=document.getElementById('det-dir');
+  const curGer=gerSel.value; const curDir=dirSel.value;
+  
+  // Gerencias
+  gerSel.innerHTML='<option value="">Todas las gerencias</option>';
+  ds.forEach(g=>{ const o=document.createElement('option'); o.value=g.nombre; o.textContent=g.nombre; if(g.nombre===curGer)o.selected=true; gerSel.appendChild(o); });
+  
+  // Direcciones filtered by gerencia
+  dirSel.innerHTML='<option value="">Todas las direcciones</option>';
+  const selG=gerSel.value;
+  const gers=selG?ds.filter(g=>g.nombre===selG):ds;
+  const dirs=new Set(); gers.forEach(g=>g.dirs.forEach(d=>dirs.add(d.nombre)));
+  dirs.forEach(d=>{ const o=document.createElement('option'); o.value=d; o.textContent=d; if(d===curDir)o.selected=true; dirSel.appendChild(o); });
+}
+
+function acum(vals,upTo){
+  let s=0; for(let i=0;i<=upTo;i++)s+=vals[i]||0; return s;
+}
+
+function renderDetalle(){
+  updateFilters();
+  const ds=getDataset(); const type=getType();
+  const gerFilter=document.getElementById('det-ger').value;
+  const dirFilter=document.getElementById('det-dir').value;
+  const isNC=(type==='nc');
+  const showView=detView;
+  
+  // Headers
+  let colHeaders='';
+  if(!isNC){
+    if(showView==='mes') colHeaders=MESES.slice(0,curM+1).map(m=>`<th class="num">${m}</th>`).join('');
+    else if(showView==='acum') colHeaders=MESES.slice(0,curM+1).map(m=>`<th class="num">Acum. ${m}</th>`).join('');
+    else colHeaders=MESES.slice(0,curM+1).map(m=>`<th class="num">${m}</th><th class="num">Acum. ${m}</th>`).join('');
+  } else {
+    colHeaders='<th class="num">Saldo Pdte. x Fact. (MCOP)</th><th style="min-width:90px">% del total</th>';
+  }
+  
+  let h=`<table class="det-table"><thead><tr><th>Gerencia / Dirección / Proyecto</th>${colHeaders}</tr></thead><tbody>`;
+  
+  const totalNC=NC_DATA.reduce((s,g)=>s+g.saldo,0);
+  
+  const gersToShow=gerFilter?ds.filter(g=>g.nombre===gerFilter):ds;
+  
+  gersToShow.forEach(g=>{
+    const gKey='g_'+g.nombre;
+    const gExp=EXPANDED[gKey]!==false;
+    const dirsToShow=dirFilter?g.dirs.filter(d=>d.nombre===dirFilter):g.dirs;
+    if(!dirsToShow.length)return;
+    
+    // Gerencia row
+    let gerCols='';
+    if(!isNC){
+      const gVals=g.vals||[];
+      if(showView==='mes') gerCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num" style="font-weight:700">${fmtMCOP(gVals[i]||0)}</td>`).join('');
+      else if(showView==='acum') gerCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num" style="font-weight:700">${fmtMCOP(acum(gVals,i))}</td>`).join('');
+      else gerCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num" style="font-weight:700">${fmtMCOP(gVals[i]||0)}</td><td class="num" style="font-weight:700">${fmtMCOP(acum(gVals,i))}</td>`).join('');
+    } else {
+      const gs=g.saldo||0;
+      const pct=totalNC?gs/totalNC:0;
+      gerCols=`<td class="num" style="font-weight:700">${(gs/1e6).toFixed(1)}</td><td>${avBar(pct,'#1a3a5c')}</td>`;
+    }
+    h+=`<tr class="lvl-ger" style="background:#f0f4ff"><td><button class="expand-btn" onclick="toggleExp('${gKey}',this)">${gExp?'▾':'▸'}</button> <strong>${g.nombre}</strong></td>${gerCols}</tr>`;
+    
+    if(gExp){
+      dirsToShow.forEach(d=>{
+        const dKey='d_'+g.nombre+'_'+d.nombre;
+        const dExp=EXPANDED[dKey]!==false;
+        
+        let dirCols='';
+        if(!isNC){
+          const dVals=d.vals||[];
+          if(showView==='mes') dirCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num">${fmtMCOP(dVals[i]||0)}</td>`).join('');
+          else if(showView==='acum') dirCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num">${fmtMCOP(acum(dVals,i))}</td>`).join('');
+          else dirCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num">${fmtMCOP(dVals[i]||0)}</td><td class="num">${fmtMCOP(acum(dVals,i))}</td>`).join('');
+        } else {
+          const ds2=d.saldo||0; const pct=g.saldo?ds2/g.saldo:0;
+          dirCols=`<td class="num">${(ds2/1e6).toFixed(1)}</td><td>${avBar(pct,'#1967d2')}</td>`;
+        }
+        h+=`<tr class="lvl-dir"><td><button class="expand-btn" onclick="toggleExp('${dKey}',this)">${dExp?'▾':'▸'}</button> ${d.nombre}</td>${dirCols}</tr>`;
+        
+        if(dExp){
+          const projs=d.projs||[];
+          projs.forEach(p=>{
+            let projCols='';
+            if(!isNC){
+              const pVals=p.vals||[];
+              if(showView==='mes') projCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num" style="color:#6c757d">${fmtMCOP(pVals[i]||0)}</td>`).join('');
+              else if(showView==='acum') projCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num" style="color:#6c757d">${fmtMCOP(acum(pVals,i))}</td>`).join('');
+              else projCols=MESES.slice(0,curM+1).map((_,i)=>`<td class="num" style="color:#6c757d">${fmtMCOP(pVals[i]||0)}</td><td class="num" style="color:#6c757d">${fmtMCOP(acum(pVals,i))}</td>`).join('');
+            } else {
+              const ps=p.saldo||0; const pct=d.saldo?ps/d.saldo:0;
+              projCols=`<td class="num" style="color:#6c757d">${(ps/1e6).toFixed(2)}</td><td>${avBar(pct,'#6c757d')}</td>`;
+            }
+            const pLabel=p.nombre?`<span style="color:#6c757d;font-size:11px">${p.id}</span> ${p.nombre}`:`${p.id}`;
+            h+=`<tr class="lvl-prj"><td>${pLabel}</td>${projCols}</tr>`;
+          });
+        }
+      });
+    }
+  });
+  
+  h+=`</tbody></table>`;
+  document.getElementById('det-content').innerHTML=h;
+}
+
+function toggleExp(key,btn){
+  EXPANDED[key]=EXPANDED[key]===false?true:false;
+  btn.textContent=EXPANDED[key]===false?'▸':'▾';
+  renderDetalle();
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+buildMonthBar();
+renderVG();
+
+const ING_TOP=[{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"OTC ENERGÍA","id":"AIR22200-101","nombre":"SCR Norte & Centro","vals":[1311959630,1532847653,1583932406,1609117780,1618343380],"acum":7656200849,"pct":13.3},{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"OTC ENERGÍA","id":"AIR22200-100","nombre":"SCR AIR-E","vals":[979121613,1148196048,1179364519,1144831742,1099994037],"acum":5551507959,"pct":9.7},{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"OTC ENERGÍA","id":"EHL25100-100","nombre":"SCR-LR- ELECTROHUILA","vals":[950000000,957823507,847769763,993195961,1029813988],"acum":4778603219,"pct":8.3},{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"OTC ENERGÍA","id":"AFN23200-100","nombre":"CONSORCIO BMISES","vals":[667705135,600238272,725400807,653012138,727023752],"acum":3373380104,"pct":5.9},{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"OTC AGUA Y GEST. SOCIAL","id":"AAA23132-100","nombre":"IRREGULARIDADES AGUA","vals":[669888421,634396170,563467976,470772262,498707968],"acum":2837232797,"pct":4.9},{"ger":"Grencia de Consultoría","dir":"GESTIÓN DE ACTIVOS","id":"AFN24103-100","nombre":"BDA AFINIA III","vals":[483701903,608647481,482324445,455345173,387551833],"acum":2417570835,"pct":4.2},{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"SERVICIOS OUTSOURCING","id":"AFN23116-100","nombre":"CENTRAL ESCRITOS AFINIA","vals":[385704794,472324158,522121196,426970027,502162917],"acum":2309283092,"pct":4.0},{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"SERVICIOS OUTSOURCING","id":"AIR22112-100","nombre":"CENTRAL ESCRITOS AIRE","vals":[344194077,413820093,516826206,449605128,483764360],"acum":2208209864,"pct":3.8},{"ger":"Grencia de Consultoría","dir":"INTERVENTORÍA","id":"EDM23136-100","nombre":"SUPERVISIÓN EDEMET","vals":[408216775,437050479,420021677,458066921,475541058],"acum":2198896910,"pct":3.8},{"ger":"Grencia de Consultoría","dir":"INTERVENTORÍA","id":"CEL25103-100","nombre":"CELSIA","vals":[414087230,380097549,361840891,304100596,347363320],"acum":1807489586,"pct":3.1},{"ger":"Grencia de Consultoría","dir":"DISEÑOS ELECTRICOS","id":"EDM23114-100","nombre":"EDEMET DISEÑOS MTBT","vals":[183538659,248187556,642425156,249579411,274056989],"acum":1597787771,"pct":2.8},{"ger":"Grencia de Consultoría","dir":"DISEÑOS ELECTRICOS","id":"UNA25100-100","nombre":"UNIVERSIDAD NACIONAL","vals":[148754329,357013946,427443139,214000000,378000000],"acum":1525211414,"pct":2.7},{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"OTC AGUA Y GEST. SOCIAL","id":"ACU24100-100","nombre":"LECTURA ACUACAR","vals":[237310073,293007290,276576204,282711141,305992170],"acum":1395596878,"pct":2.4},{"ger":"Grencia de Operaciones Técnicas y Comerciales","dir":"SERVICIOS OUTSOURCING","id":"EDM22103-100","nombre":"Servicios Catalogos EDEMET","vals":[279147945,255567109,280159680,239333489,274817494],"acum":1329025717,"pct":2.3},{"ger":"Grencia de Consultoría","dir":"CONSULTORÍA","id":"XMC25100-100","nombre":"XM VERIFICACIÓN PLANES DE INVERSIÓN","vals":[233691151,96695761,630511144,166178428,109827857],"acum":1236904341,"pct":2.2}];
+const INT_TOP=[{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION DE INTERVENTORIA","id":"EDM23136-100 - SUPERVISIÓN EDEMET","nombre":"EDM23136-100 - SUPERVISIÓN EDEMET","vals":[408216775,1253380111,1323476976,1355582944,1620330019],"acum":5960986825,"pct":24.5},{"ger":"GERENCIA DE OPERACIONES TECNICAS Y COMERCIALES","dir":"DIRECCION DE SERVICIOS DE OUTSOURCING","id":"EDM22103-100 - Servicios Catalogos EDEMET","nombre":"EDM22103-100 - Servicios Catalogos EDEMET","vals":[757594950,777138106,805466030,753226317,767012911],"acum":3860438314,"pct":15.9},{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION DE DISEÑOS ELECTRICOS","id":"EDM23114-100 - EDEMET DISEÑOS MTBT","nombre":"EDM23114-100 - EDEMET DISEÑOS MTBT","vals":[183538659,615264874,909048538,1007434372,1064717502],"acum":3780003945,"pct":15.5},{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION DE DISEÑOS ELECTRICOS","id":"EDM23136-101 - DISEÑOS AT EDEMET","nombre":"EDM23136-101 - DISEÑOS AT EDEMET","vals":[709267331,769109854,842042586,748677899,618562826],"acum":3687660496,"pct":15.1},{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION DE DISEÑOS ELECTRICOS","id":"EDH23115-100 - EDECHI DISEÑOS MTBT","nombre":"EDH23115-100 - EDECHI DISEÑOS MTBT","vals":[173424335,463977678,1029716112,403522259,471967236],"acum":2542607620,"pct":10.4},{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION DE SERVICIOS DE CONSULTORIA","id":"CRE25100-100 - CREE Normativa Distribución","nombre":"CRE25100-100 - CREE Normativa Distribución","vals":[0,677728286,548503618,448880880,517941267],"acum":2193054051,"pct":9.0},{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION DE INTERVENTORIA","id":"EDH23137-100 - SUPERVISIÓN EDECHI","nombre":"EDH23137-100 - SUPERVISIÓN EDECHI","vals":[99670635,217988908,209337667,218322274,261418292],"acum":1006737776,"pct":4.1},{"ger":"GERENCIA DE OPERACIONES TECNICAS Y COMERCIALES","dir":"DIRECCION DE SERVICIOS DE OUTSOURCING","id":"EDH22102-100 - Servicios Catalogos EDECHI","nombre":"EDH22102-100 - Servicios Catalogos EDECHI","vals":[150211241,191551389,131993442,189244152,156219785],"acum":819220009,"pct":3.4},{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION ESTUDIOS ELECTRICOS","id":"EDM23114-101 - Estudios Conexión EDEMET","nombre":"EDM23114-101 - Estudios Conexión EDEMET","vals":[26269070,72369401,60573203,63558565,71754115],"acum":294524354,"pct":1.2},{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION DE DISEÑOS ELECTRICOS","id":"ENS25100-100 - ENSA PANAMÁ II","nombre":"ENS25100-100 - ENSA PANAMÁ II","vals":[38798027,33112199,21249339,12806571,24537157],"acum":130503293,"pct":0.5},{"ger":"GERENCIA DE CONSULTORIA","dir":"DIRECCION ESTUDIOS ELECTRICOS","id":"EDH23115-101 - Estudios Conexión EDECHI","nombre":"EDH23115-101 - Estudios Conexión EDECHI","vals":[0,8651010,14892968,17746482,15518760],"acum":56809220,"pct":0.2},{"ger":"GERENCIA TI","dir":"GERENCIA TI","id":"EDM22103-101 - Soporte REDMINE EDEMET","nombre":"EDM22103-101 - Soporte REDMINE EDEMET","vals":[3488691,3278959,3072850,2962163,2921777],"acum":15724440,"pct":0.1}];
+const NC2_TOP=[{"dir":"OTC ENERGIA","id":"ELH25100-100","nombre":"SCR-LR Electrohuila (Nuevo)","categoria":"Nuevos Clientes","vals":[950000000,1907823507,1753184334,993195961,1029813988],"acum":6634017790,"pct":60.9},{"dir":"DISEÑOS","id":"UNA25100-100","nombre":"Universidad Nacional","categoria":"Nuevos Clientes","vals":[487543289,357013946,427443139,459469041,378000000],"acum":2109469415,"pct":19.4},{"dir":"CONSULTORÍA","id":"XMC25100-100","nombre":"Verificación planes inversión XM","categoria":"Nuevos Clientes","vals":[233691151,96695761,630511144,166178428,109827857],"acum":1236904341,"pct":11.4},{"dir":"CONSULTORÍA","id":"CRE25100-100","nombre":"Normativa redes distribución CREE","categoria":"Nuevos Clientes","vals":[533837,347433115,0,46739875,15788165],"acum":410494992,"pct":3.8},{"dir":"SOLUCIONES ENERGETICAS","id":"JMC24100-102","nombre":"Inmótica – Tiendas ARA","categoria":"Nuevos Negocios","vals":[0,0,92041677,80000000,75739026],"acum":247780703,"pct":2.3},{"dir":"OUTSOURCING","id":"EDM22103-100","nombre":"Catálogo servicios EDEMET (Nuevo)","categoria":"Nuevos Negocios","vals":[18809791,33877221,32721131,24180749,0],"acum":109588892,"pct":1.0},{"dir":"DISEÑOS","id":"EDM23136-101","nombre":"Diseño e Ingeniería AT EDEMET","categoria":"Nuevos Negocios","vals":[0,0,0,0,76881211],"acum":76881211,"pct":0.7},{"dir":"GESTION DE ACTIVOS ","id":"ESA25101-100","nombre":"Información redes y clientes ESSA","categoria":"Nuevos Clientes","vals":[0,0,37915842,0,0],"acum":37915842,"pct":0.3},{"dir":"SOLUCIONES ENERGETICAS","id":"JMC24100-101","nombre":"Cambio comercializador ARA","categoria":"Nuevos Negocios","vals":[0,0,20069264,0,0],"acum":20069264,"pct":0.2},{"dir":"SOLUCIONES ENERGETICAS","id":"RUI25100-100","nombre":"Cambio medidor frontera comercial","categoria":"Nuevos Clientes","vals":[13153200,0,0,0,0],"acum":13153200,"pct":0.1}];
+const NC5_TOP=[{"ger":"OPERACIONES TECNICAS Y COMERCIALES","dir":"OTC ENERGIA","id":"ELH25100-100","nombre":"SCR-LR Electrohuila","saldo":39562877624,"pct":61.7},{"ger":"CONSULTORÍA","dir":"CONSULTORÍA","id":"XMC25100-100","nombre":"Verificación planes inversión XM","saldo":8338671002,"pct":13.0},{"ger":"CONSULTORÍA","dir":"INTERVENTORIA","id":"CEL25103-100","nombre":"Interventoría CELSIA","saldo":6333666332,"pct":9.9},{"ger":"CONSULTORÍA","dir":"INTERVENTORIA","id":"CDN22200-100","nombre":"Consorcio ADISES","saldo":3484337826,"pct":5.4},{"ger":"OPERACIONES TECNICAS Y COMERCIALES","dir":"OTC AGUA Y GESTIÓN SOCIAL","id":"AAA23132-100","nombre":"Irregularidades Agua AAA","saldo":1231387465,"pct":1.9},{"ger":"OPERACIONES TECNICAS Y COMERCIALES","dir":"SERVICIOS DE OUTSOURCING","id":"AFN23116-100","nombre":"Central escritos AFINIA","saldo":1139256664,"pct":1.8},{"ger":"OPERACIONES TECNICAS Y COMERCIALES","dir":"SERVICIOS DE OUTSOURCING","id":"EDM22103-100","nombre":"Catálogo servicios EDEMET","saldo":758407145,"pct":1.2},{"ger":"CONSULTORÍA","dir":"INTERVENTORIA","id":"MDP25100-100","nombre":"PAUE","saldo":736264493,"pct":1.1},{"ger":"CONSULTORÍA","dir":"SOL.ENERGETICAS","id":"LUT26100-100","nombre":"Soluciones energéticas (varios)","saldo":735484391,"pct":1.1},{"ger":"CONSULTORÍA","dir":"GESTION DE ACTIVOS ","id":"ESA25101-100","nombre":"Información redes ESSA","saldo":644585167,"pct":1.0},{"ger":"TI","dir":"DESARROLLO DE SOFTWARE","id":"AFN24101-100","nombre":"SAM Herramientas FORMAP AFINIA","saldo":482433011,"pct":0.8},{"ger":"OPERACIONES TECNICAS Y COMERCIALES","dir":"SERVICIOS DE OUTSOURCING","id":"EDH22102-100","nombre":"Catálogo servicios EDECHI","saldo":189601786,"pct":0.3}];
+const ING_TOT=57517.8;
+const INT_TOT=24348.4;
+const NC2_TOT=10896.3;
+const NC5_TOT=64168.1;
+const MESES_ANA=['ENE','FEB','MAR','ABR','MAY'];
+
+let curAna='o1';
+function setAnaTab(t){
+  curAna=t;
+  ['o1','o2','o3','o5'].forEach(x=>{
+    document.getElementById('atab-'+x).classList.toggle('active',x===t);
+  });
+  renderAna();
+}
+
+function mcopFmt(v){
+  if(v===null||v===undefined||isNaN(v))return '—';
+  return (v/1e6).toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1});
+}
+
+function rankColor(i){
+  if(i===0)return['#fef9c3','#854d0e'];
+  if(i===1)return['#f1f5f9','#475569'];
+  if(i===2)return['#fff7ed','#9a3412'];
+  return['#f8f9fa','#9ca3af'];
+}
+
+function barHtml(pct,color){
+  return `<div class="bar-cell"><div class="bar-outer"><div class="bar-inner" style="width:${Math.min(pct,100).toFixed(1)}%;background:${color}"></div></div><span style="font-size:11px;color:#6b7280;min-width:34px;text-align:right">${pct.toFixed(1)}%</span></div>`;
+}
+
+function shortGer(s){
+  return s.replace('Grencia de ','').replace('GERENCIA DE ','').replace('GERENCIA ','').replace(' TECNICAS Y COMERCIALES','').replace('Operaciones Técnicas y Comerciales','OTC').replace('Consultoría','Consultoría').replace('TI','TI');
+}
+
+function renderAna(){
+  const ac=document.getElementById('ana-content');
+  let h='<div class="vg-wrap"><table class="ana-table">';
+
+  if(curAna==='o1'){
+    const tot=ING_TOT;
+    h+=`<thead><tr>
+      <th style="width:32px" class="nc">#</th>
+      <th>Proyecto</th>
+      <th>Gerencia</th>
+      <th>Dirección</th>
+      ${MESES_ANA.map(m=>`<th class="nr">${m}</th>`).join('')}
+      <th class="nr">Acum. MCOP</th>
+      <th style="width:160px">Contribución</th>
+    </tr></thead><tbody>`;
+    ING_TOP.forEach((r,i)=>{
+      const [bg,fg]=rankColor(i);
+      h+=`<tr>
+        <td class="nc"><span class="rank-badge" style="background:${bg};color:${fg}">${i+1}</span></td>
+        <td><span style="font-size:12px;font-weight:500">${r.nombre}</span><br><span style="font-size:10px;color:#9ca3af">${r.id}</span></td>
+        <td><span class="ger-badge">${shortGer(r.ger)}</span></td>
+        <td style="font-size:11px;color:#6b7280">${r.dir}</td>
+        ${r.vals.map(v=>`<td class="nr">${mcopFmt(v)}</td>`).join('')}
+        <td class="nr" style="font-weight:600">${mcopFmt(r.acum)}</td>
+        <td>${barHtml(r.pct,'#1a3a5c')}</td>
+      </tr>`;
+    });
+    h+=`<tr style="background:#f0f4ff;font-weight:700">
+      <td></td><td colspan="3">Total acumulado (todos los proyectos)</td>
+      <td colspan="5" class="nr">${tot.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})} MCOP</td>
+      <td></td>
+    </tr>`;
+  }
+
+  else if(curAna==='o2'){
+    h+=`<thead><tr>
+      <th style="width:32px" class="nc">#</th>
+      <th>Proyecto</th>
+      <th>Gerencia</th>
+      <th>Dirección</th>
+      ${MESES_ANA.map(m=>`<th class="nr">${m}</th>`).join('')}
+      <th class="nr">Acum. MCOP</th>
+      <th style="width:160px">Contribución</th>
+    </tr></thead><tbody>`;
+    INT_TOP.forEach((r,i)=>{
+      const [bg,fg]=rankColor(i);
+      h+=`<tr>
+        <td class="nc"><span class="rank-badge" style="background:${bg};color:${fg}">${i+1}</span></td>
+        <td><span style="font-size:12px;font-weight:500">${r.nombre.split(' - ').slice(-1)[0]}</span><br><span style="font-size:10px;color:#9ca3af">${r.id.split(' - ')[0]}</span></td>
+        <td><span class="ger-badge">${shortGer(r.ger)}</span></td>
+        <td style="font-size:11px;color:#6b7280">${r.dir}</td>
+        ${r.vals.map(v=>`<td class="nr">${mcopFmt(v)}</td>`).join('')}
+        <td class="nr" style="font-weight:600">${mcopFmt(r.acum)}</td>
+        <td>${barHtml(r.pct,'#1967d2')}</td>
+      </tr>`;
+    });
+    h+=`<tr style="background:#f0f4ff;font-weight:700">
+      <td></td><td colspan="3">Total acumulado</td>
+      <td colspan="5" class="nr">${INT_TOT.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})} MCOP</td>
+      <td></td>
+    </tr>`;
+  }
+
+  else if(curAna==='o3'){
+    h+=`<thead><tr>
+      <th style="width:32px" class="nc">#</th>
+      <th>Proyecto</th>
+      <th>Dirección</th>
+      <th class="nc">Categoría</th>
+      ${MESES_ANA.map(m=>`<th class="nr">${m}</th>`).join('')}
+      <th class="nr">Acum. MCOP</th>
+      <th style="width:160px">Contribución</th>
+    </tr></thead><tbody>`;
+    NC2_TOP.forEach((r,i)=>{
+      const [bg,fg]=rankColor(i);
+      const catCls=r.categoria==='Nuevos Clientes'?'cat-nc':'cat-nn';
+      h+=`<tr>
+        <td class="nc"><span class="rank-badge" style="background:${bg};color:${fg}">${i+1}</span></td>
+        <td><span style="font-size:12px;font-weight:500">${r.nombre}</span><br><span style="font-size:10px;color:#9ca3af">${r.id}</span></td>
+        <td style="font-size:11px;color:#6b7280">${r.dir}</td>
+        <td class="nc"><span class="cat-pill ${catCls}">${r.categoria==='Nuevos Clientes'?'N.Cliente':'N.Negocio'}</span></td>
+        ${r.vals.map(v=>`<td class="nr">${mcopFmt(v)}</td>`).join('')}
+        <td class="nr" style="font-weight:600">${mcopFmt(r.acum)}</td>
+        <td>${barHtml(r.pct,'#15803d')}</td>
+      </tr>`;
+    });
+    h+=`<tr style="background:#f0fdf4;font-weight:700">
+      <td></td><td colspan="3">Total acumulado</td>
+      <td colspan="5" class="nr">${NC2_TOT.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})} MCOP</td>
+      <td></td>
+    </tr>`;
+  }
+
+  else if(curAna==='o5'){
+    h+=`<thead><tr>
+      <th style="width:32px" class="nc">#</th>
+      <th>Proyecto</th>
+      <th>Gerencia</th>
+      <th>Dirección</th>
+      <th class="nr">Saldo pdte. MCOP</th>
+      <th style="width:160px">% del total</th>
+    </tr></thead><tbody>`;
+    NC5_TOP.forEach((r,i)=>{
+      const [bg,fg]=rankColor(i);
+      h+=`<tr>
+        <td class="nc"><span class="rank-badge" style="background:${bg};color:${fg}">${i+1}</span></td>
+        <td><span style="font-size:12px;font-weight:500">${r.nombre}</span><br><span style="font-size:10px;color:#9ca3af">${r.id}</span></td>
+        <td><span class="ger-badge">${shortGer(r.ger)}</span></td>
+        <td style="font-size:11px;color:#6b7280">${r.dir}</td>
+        <td class="nr" style="font-weight:600">${mcopFmt(r.saldo)}</td>
+        <td>${barHtml(r.pct,'#b45309')}</td>
+      </tr>`;
+    });
+    h+=`<tr style="background:#fffbeb;font-weight:700">
+      <td></td><td colspan="3">Total saldo pendiente</td>
+      <td class="nr">${NC5_TOT.toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})} MCOP</td>
+      <td></td>
+    </tr>`;
+  }
+
+  h+='</tbody></table></div>';
+  ac.innerHTML=h;
+}
+
+renderAna();
+</script>
+</body>
+</html>
