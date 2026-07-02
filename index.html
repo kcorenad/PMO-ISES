@@ -1449,7 +1449,9 @@ function processWorkbook(wb, fname){
     selArr.forEach(sel=>{if(sel)sel.value=meses[meses.length-1];});
     st.textContent='✓ '+fname.split('/').pop(); st.style.color='#9BC534';
     document.getElementById('footN').textContent=`${fname} · ${meses.length} meses · ${rows.length} filas`;
-    setTimeout(()=>{st.textContent='';hideUploadModal();},2500);
+    hideUploadModal();   // cierra modal de inmediato
+    st.textContent='✓ Cargado'; st.style.color='#9BC534';
+    setTimeout(()=>{ st.textContent=''; }, 3000);
     buildDirOptions();
     // Force selTabMes to last month so Detalle tab shows new data
     const stm=document.getElementById('selTabMes');
@@ -1494,9 +1496,40 @@ function refresh(){
 }
 
 // ── INIT ────────────────────────────────────────────────────────────
+// ── AUTO-LOAD DESDE GITHUB ─────────────────────────────────────────
+// Si el Excel vive en el repo GitHub, se carga automáticamente al abrir.
+// Cambia EXCEL_URL a la URL Raw de tu archivo en GitHub.
+const EXCEL_URL = 'https://raw.githubusercontent.com/kcorenad/PMO-ISES/main/WIP_data.xlsx';
+
+function autoLoadExcel() {
+  const st = document.getElementById('upSt');
+  st.textContent = '⏳ Cargando datos...'; st.style.color = '#E8950A';
+  fetch(EXCEL_URL + '?v=' + Date.now())   // ?v= rompe caché
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.arrayBuffer();
+    })
+    .then(buf => {
+      const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+      processWorkbook(wb, EXCEL_URL.split('/').pop());
+      st.textContent = '✓ Datos actualizados'; st.style.color = '#9BC534';
+      setTimeout(() => { st.textContent = ''; }, 3000);
+    })
+    .catch(err => {
+      // Si falla (Excel no existe en GitHub aún), usa datos embebidos
+      st.textContent = ''; 
+      console.warn('Auto-load omitido:', err.message);
+    });
+}
+
 buildDirOptions();
 refresh();
 rInforme();
+
+// Intenta cargar Excel desde GitHub (solo si la URL está configurada)
+if (EXCEL_URL && !EXCEL_URL.includes('TU_USUARIO')) {
+  autoLoadExcel();
+}
 </script>
 
 <script>
@@ -1558,12 +1591,17 @@ document.addEventListener('click', function() {
     <!-- GITHUB -->
     <div class="umodal-pane" id="um-github">
       <div class="umodal-hint" style="margin-bottom:14px;">
-        <strong>Opción recomendada para SharePoint:</strong><br><br>
-        1. Sube el Excel a tu repositorio GitHub<br>
-        2. Abre el archivo en GitHub → clic en <strong>Raw</strong><br>
-        3. Copia esa URL y pégala en la pestaña <strong>Desde URL</strong><br><br>
-        O sube el Excel directamente a OneDrive y usa el enlace de descarga directa.
+        <strong>⭐ Opción recomendada — funciona en SharePoint y cualquier pestaña:</strong><br><br>
+        1. Sube el Excel a tu repo GitHub con el nombre <code>WIP_data.xlsx</code><br>
+        2. El dashboard lo carga automáticamente cada vez que se abre<br>
+        3. Todas las pestañas del navegador ven los mismos datos<br><br>
+        <strong>El archivo debe llamarse exactamente:</strong> <code>WIP_data.xlsx</code><br>
+        y estar en la raíz del repo <code>kcorenad/PMO-ISES</code>
       </div>
+      <button class="upload-btn" style="width:100%;justify-content:center;margin-bottom:8px;"
+              onclick="autoLoadExcel();hideUploadModal();">
+        🔄 Recargar desde GitHub ahora
+      </button>
       <button class="umodal-close" onclick="umSw('url', document.querySelectorAll('.umodal-tab')[1])">
         Ir a Desde URL →
       </button>
