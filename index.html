@@ -508,7 +508,7 @@ const ML={'202510':'Oct 2025','202511':'Nov 2025','202512':'Dic 2025',
   '202604':'Abr 2026','202605':'May 2026','202606':'Jun 2026'};
 const MS={'202510':'Oct','202511':'Nov','202512':'Dic','202601':'Ene',
   '202602':'Feb','202603':'Mar','202604':'Abr','202605':'May','202606':'Jun'};
-const MO=['202510','202511','202512','202601','202602','202603','202604','202605','202606'];
+let MO=['202510','202511','202512','202601','202602','202603','202604','202605','202606'];
 const GERS=['GERENCIA DE CONSULTORÍA',
   'GERENCIA DE OPERACIONES TECNICAS Y COMERCIALES','GERENCIA TI'];
 const GS=['G. Consultoría','G. Operaciones TyC','G. TI'];
@@ -1429,16 +1429,32 @@ function processWorkbook(wb, fname){
 
     DATA=nd;
     const meses=Object.keys(nd).sort();
-    const mo={'01':'Ene','02':'Feb','03':'Mar','04':'Abr','05':'May','06':'Jun','07':'Jul','08':'Ago','09':'Sep','10':'Oct','11':'Nov','12':'Dic'};
+    MO=meses;                                          // ← rebuild global month list
+    meses.forEach(m=>{                                 // ← rebuild ML labels for new months
+      const yr=m.slice(0,4), mm=m.slice(4);
+      const mo={'01':'Ene','02':'Feb','03':'Mar','04':'Abr','05':'May','06':'Jun',
+                '07':'Jul','08':'Ago','09':'Sep','10':'Oct','11':'Nov','12':'Dic'};
+      ML[m]=mo[mm]+' '+yr;
+    });
     const selArr=[document.getElementById('selMes'),document.getElementById('selTabMes')];
-    selArr.forEach(sel=>{if(!sel)return;sel.innerHTML='<option value="ALL">Todos los meses</option>';meses.forEach(m=>{sel.innerHTML+=`<option value="${m}">${mo[m.slice(4)]} ${m.slice(0,4)}</option>`;});});
+    selArr.forEach(sel=>{if(!sel)return;sel.innerHTML='<option value="ALL">Todos los meses</option>';meses.forEach(m=>{sel.innerHTML+=`<option value="${m}">${ML[m]||m}</option>`;});});
     stMes=meses[meses.length-1];stYear='ALL';stGer='ALL';
-    document.querySelectorAll('#btnYear .fbtn').forEach(b=>b.classList.remove('on'));
+    // Rebuild year filter buttons
+    const years=[...new Set(meses.map(m=>m.slice(0,4)))];
+    const btnYearDiv=document.getElementById('btnYear');
+    if(btnYearDiv){
+      btnYearDiv.innerHTML=`<button class="fbtn on" onclick="setYear('ALL',this)">Todos</button>`
+        +years.map(y=>`<button class="fbtn" onclick="setYear('${y}',this)">${y}</button>`).join('');
+    }
     selArr.forEach(sel=>{if(sel)sel.value=meses[meses.length-1];});
     st.textContent='✓ '+fname.split('/').pop(); st.style.color='#9BC534';
     document.getElementById('footN').textContent=`${fname} · ${meses.length} meses · ${rows.length} filas`;
     setTimeout(()=>{st.textContent='';hideUploadModal();},2500);
-    buildDirOptions(); refresh();
+    buildDirOptions();
+    // Force selTabMes to last month so Detalle tab shows new data
+    const stm=document.getElementById('selTabMes');
+    if(stm){ stm.value=meses[meses.length-1]; }
+    refresh();
   }catch(err){st.textContent='❌ '+err.message; st.style.color='#D94F4F'; console.error(err);}
 }
 
