@@ -1116,18 +1116,28 @@ function rInforme() {
   const mesLbl = ML[mes] || mes;
   const as     = DATA[mes].as || [];
   const ctx    = DATA[mes].ctx || {};
-  const esp    = ctx.avance_esperado || null;
-  const da     = ctx.dias_acum || null;
   const dm     = ctx.dias_mes  || null;
-  const tot    = DATA[mes].g['TOTAL'] || {};
-  const pron   = tot.p||0, acum=tot.acum||0, pct=tot.pct||0;
-  const desv   = esp ? +(pct-esp).toFixed(1) : null;
-  const semLbl = as.length>0 ? 'S'+as.join('+S') : '—';
+
+  // ── CLAVE DE NEGOCIO: ¿hay ejecución real? ──────────────────────────
+  // hasEjecucion = true si al menos una semana WIP tiene datos (s1..s5 > 0)
+  const hasEjecucion = as.length > 0;
+
+  // esp y dias_acum SOLO se calculan cuando hay ejecución real
+  const esp  = hasEjecucion ? (ctx.avance_esperado || null) : null;
+  const da   = hasEjecucion ? (ctx.dias_acum || null) : null;
+
+  const tot  = DATA[mes].g['TOTAL'] || {};
+  const pron = tot.p||0, acum=tot.acum||0, pct=hasEjecucion?(tot.pct||0):0;
+  const desv = (hasEjecucion && esp) ? +(pct-esp).toFixed(1) : null;
+  const semLbl = as.length>0 ? 'S'+as.join('+S') : 'Sin ejecución';
   const projs  = DATA[mes].pr || [];
   const SEM_C  = {0:'#6B7A8D',1:'#0DA9C9',2:'#9BC534',3:'#E8950A',4:'#00B0F0',5:'#8B5CF6'};
 
-  const kpiCol  = v => v>=(esp||100)?'var(--ok)':v>=(esp?esp*0.85:85)?'var(--orange)':'var(--red)';
-  const semIcon = v => v>=(esp||100)?'🟢':v>=(esp?esp*0.85:85)?'🟡':'🔴';
+  // Colores y semáforos SOLO con ejecución; sin ella → neutro
+  const kpiCol  = v => !hasEjecucion ? 'var(--mid)'
+    : v>=(esp||100)?'var(--ok)':v>=(esp?esp*0.85:85)?'var(--orange)':'var(--red)';
+  const semIcon = v => !hasEjecucion ? '⬜'
+    : v>=(esp||100)?'🟢':v>=(esp?esp*0.85:85)?'🟡':'🔴';
 
   // getSem: detect semana from note text prefix first, then stored value
   function getSem(n){
@@ -1138,14 +1148,19 @@ function rInforme() {
   }
 
   // ① COMMAND BAR ─────────────────────────────────────────────────────
+  const subLbl = hasEjecucion
+    ? `Semanas ${semLbl}${esp?` · Avance esperado <b>${esp}%</b> (${da}d/${dm}d hábiles)`:''}`
+    : `Solo proyección cargada${dm?` · ${dm} días hábiles en el mes`:''}`;
+
   document.getElementById('informeHeader').innerHTML=`
     <div class="inf-cmdbar-l">
       <div class="inf-cmdbar-title">Informe WIP · ${mesLbl}</div>
-      <div class="inf-cmdbar-sub">Semanas ${semLbl}${esp?` · Avance esperado <b>${esp}%</b> (${da}d/${dm}d hábiles)`:''}</div>
+      <div class="inf-cmdbar-sub">${subLbl}</div>
     </div>
     <div class="inf-cmdbar-kpis">
-      <div class="inf-kpi"><div class="inf-kpi-lbl">Meta</div>
+      <div class="inf-kpi"><div class="inf-kpi-lbl">Meta Mensual</div>
         <div class="inf-kpi-val">${fmtM(pron)}</div></div>
+      ${hasEjecucion ? `
       <div class="inf-kpi"><div class="inf-kpi-lbl">WIP+Ajuste</div>
         <div class="inf-kpi-val">${fmtM(acum)}</div></div>
       <div class="inf-kpi"><div class="inf-kpi-lbl">Cumplimiento</div>
@@ -1155,141 +1170,195 @@ function rInforme() {
       ${desv!==null?`<div class="inf-kpi"><div class="inf-kpi-lbl">Variación</div>
         <div class="inf-kpi-val" style="color:${desv>=0?'var(--ok)':'var(--red)'}">
           ${desv>=0?'+':''}${desv} pp</div></div>`:''}
-      <div>${sem(pct,esp)}</div>
+      <div>${sem(pct,esp)}</div>` : `
+      <div style="font-size:12px;color:var(--mid);padding:6px 12px;background:rgba(107,122,141,.08);
+           border-radius:6px;border:1px dashed var(--border)">
+        ⏳ Seguimiento activo desde Semana 1
+      </div>`}
     </div>`;
 
   // ② BULLET CHARTS ───────────────────────────────────────────────────
   document.getElementById('infGerCards').innerHTML = GERS.map((g,i)=>{
-    const gd=DATA[mes].g[g]||{}; const gp=gd.pct||0;
-    const col=kpiCol(gp); const gDesv=esp?(gp-esp):(gp-100);
-    const realW=Math.min(Math.max(gp,0),130);
-    return `<div class="inf-bullet-card" style="--bc:${col}">
+    const gd  = DATA[mes].g[g]||{};
+    const gp  = hasEjecucion ? (gd.pct||0) : 0;
+    const col = kpiCol(gp);
+    const gDesv = hasEjecucion ? (esp?(gp-esp):(gp-100)) : null;
+    const realW = hasEjecucion ? Math.min(Math.max(gp,0),130) : 0;
+    return `<div class="inf-bullet-card" style="--bc:${hasEjecucion?col:'var(--mid)'}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
         <div>
           <div style="font-size:13px;font-weight:800;color:var(--dark)">${GS[i]}</div>
-          <div style="font-size:10px;color:var(--light);margin-top:2px">${da&&dm?`${da}d de ${dm}d hábiles`:''}</div>
+          <div style="font-size:10px;color:var(--light);margin-top:2px">
+            ${hasEjecucion&&da&&dm?`${da}d de ${dm}d hábiles`:dm?`Meta: ${dm}d hábiles en el mes`:''}
+          </div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:26px;font-weight:800;color:${col};line-height:1">${gp.toFixed(1)}%</div>
-          <div style="margin-top:4px">${sem(gp,esp)}</div>
+          ${hasEjecucion
+            ? `<div style="font-size:26px;font-weight:800;color:${col};line-height:1">${gp.toFixed(1)}%</div>
+               <div style="margin-top:4px">${sem(gp,esp)}</div>`
+            : `<div style="font-size:13px;color:var(--mid);font-style:italic">Sin ejecución</div>`}
         </div>
       </div>
       <div style="margin-bottom:10px">
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--light);margin-bottom:4px">
-          <span>WIP+Ajuste ejecutado</span><span>Meta (100%)</span>
+          <span>${hasEjecucion?'WIP+Ajuste ejecutado':'Proyección mensual'}</span>
+          <span>Meta (100%)</span>
         </div>
         <div style="position:relative;height:14px;background:#F0F2F5;border-radius:7px;overflow:hidden">
-          ${esp?`<div style="position:absolute;inset:0;width:${Math.min(esp,130)}%;background:rgba(232,149,10,.18);border-radius:7px"></div>`:''}
+          ${hasEjecucion&&esp?`<div style="position:absolute;inset:0;width:${Math.min(esp,130)}%;background:rgba(232,149,10,.18);border-radius:7px"></div>`:''}
           <div style="position:absolute;top:2px;left:0;height:10px;width:${realW}%;background:${col};border-radius:5px;transition:width .5s"></div>
           <div style="position:absolute;top:0;right:0;width:2px;height:100%;background:var(--dark);opacity:.4"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;margin-top:5px">
-          <span style="color:${col}">${fmtM(gd.acum||0)}</span>
+          <span style="color:${hasEjecucion?col:'var(--mid)'}">${hasEjecucion?fmtM(gd.acum||0):'—'}</span>
           <span style="color:var(--cyan)">${fmtM(gd.p||0)}</span>
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:10.5px;padding-top:7px;border-top:1px solid var(--border)">
-        ${esp?`<span style="color:var(--light)">Esperado: <b style="color:var(--orange)">${esp}%</b></span>`:'<span></span>'}
-        <span style="color:${gDesv>=0?'var(--ok)':'var(--red)'};font-weight:700">${gDesv>=0?'▲ +':'▼ '}${Math.abs(gDesv).toFixed(1)} pp</span>
+        ${hasEjecucion&&esp?`<span style="color:var(--light)">Esperado: <b style="color:var(--orange)">${esp}%</b></span>`:'<span style="color:var(--light);font-style:italic">Análisis disponible desde S1</span>'}
+        ${hasEjecucion&&gDesv!==null
+          ? `<span style="color:${gDesv>=0?'var(--ok)':'var(--red)'};font-weight:700">${gDesv>=0?'▲ +':'▼ '}${Math.abs(gDesv).toFixed(1)} pp</span>`
+          : ''}
       </div>
     </div>`;
   }).join('');
 
-  // ③ ALERTAS & OBSERVACIONES — panel ejecutivo integrado ──────────────
-  // KPI summary cards
-  const critCount  = projs.filter(p=>p.p>0&&p.pct<(esp?esp*0.7:70)).length;
-  const alertCount = projs.filter(p=>p.p>0&&p.pct>=(esp?esp*0.7:70)&&p.pct<(esp||100)).length;
-  const okCount    = projs.filter(p=>p.pct>=(esp||100)).length;
-  const gerAlerts  = GERS.filter(g=>{const gd=DATA[mes].g[g]||{};const gap=esp?(gd.pct-esp):(gd.pct-100);return gap<-5;}).length;
-
-  const kpiCards = [
-    {cls:'bad', icon:'🔴', val:critCount,  lbl:'Proyectos Críticos', sub:'Bajo 70% del ritmo esperado'},
-    {cls:'warn',icon:'🟡', val:alertCount, lbl:'En Alerta',          sub:'Entre 70-99% del ritmo'},
-    {cls:'ok',  icon:'🟢', val:okCount,    lbl:'En Meta o Superando',sub:'Cumplimiento ≥ esperado'},
-    {cls:'gen', icon:'🏢', val:gerAlerts,  lbl:'Gerencias c/ Alerta',sub:'Desviación > 5 pp vs esperado'},
-  ];
-
-  // Observations — classified, named, actionable
-  const obs = [];
-  // General
-  if(desv !== null){
-    if(desv > 5)
-      obs.push({lvl:'ok',  ctx:'Corporativo',t:`Portafolio supera el ritmo esperado en <b>+${desv} pp</b>. Avance real ${pct.toFixed(1)}% vs ${esp}% esperado. Proyección de cierre favorable.`});
-    else if(desv >= -5)
-      obs.push({lvl:'gen', ctx:'Corporativo',t:`Portafolio dentro del rango de seguimiento. Avance real <b>${pct.toFixed(1)}%</b> vs <b>${esp}%</b> esperado (${desv} pp). Monitorear semanas siguientes.`});
-    else
-      obs.push({lvl:'gen', ctx:'Corporativo',t:`Portafolio <b>${Math.abs(desv).toFixed(1)} pp</b> por debajo del ritmo. Avance real <b>${pct.toFixed(1)}%</b> vs <b>${esp}%</b> esperado. <b>Acción requerida.</b>`});
-  }
-  // Por gerencia
-  GERS.forEach((g,i)=>{
-    const gd=DATA[mes].g[g]||{}; const gp=gd.pct||0;
-    const gap=esp?(gp-esp):(gp-100);
-    const espStr=esp?` (${gp.toFixed(1)}% vs ${esp}% esperado)`:'';
-    if(gap < -15)
-      obs.push({lvl:'gen',ctx:GS[i],t:`Desviación crítica <b>${gap.toFixed(1)} pp</b>${espStr}. Meta ${fmtM(gd.p)}, WIP+Ajuste ${fmtM(gd.acum)}. Requiere revisión inmediata y plan de recuperación.`});
-    else if(gap < -5)
-      obs.push({lvl:'ger',ctx:GS[i],t:`Desviación moderada <b>${gap.toFixed(1)} pp</b>${espStr}. Meta ${fmtM(gd.p)}, WIP+Ajuste ${fmtM(gd.acum)}. Monitoreo recomendado.`});
-    else if(gap > 10)
-      obs.push({lvl:'ok', ctx:GS[i],t:`Supera el ritmo esperado en <b>+${gap.toFixed(1)} pp</b>${espStr}. Meta ${fmtM(gd.p)}, WIP+Ajuste ${fmtM(gd.acum)}.`});
-  });
-  // Por dirección crítica
-  Object.entries(DATA[mes].dr||{})
-    .filter(([k,v])=>v.p>100&&(esp?(v.pct-esp)<-10:(v.pct-100)<-10))
-    .sort((a,b)=>(a[1].pct||0)-(b[1].pct||0)).slice(0,3)
-    .forEach(([dk,dv])=>{
-      const dNm=dk.replace(/DIRECCION\s*(DE\s*)?/gi,'').replace(/DIRECCIÓN\s*(DE\s*)?/gi,'').trim();
-      const gap=esp?(dv.pct-esp):(dv.pct-100);
-      obs.push({lvl:'dir',ctx:dNm,t:`Desviación <b>${gap.toFixed(1)} pp</b>. Cumplimiento ${dv.pct.toFixed(1)}% · Meta ${fmtM(dv.p)} · WIP+Ajuste ${fmtM(dv.acum)}.`});
-    });
-  // Proyectos críticos nombrados
-  projs.filter(p=>p.p>80&&p.pct<(esp?esp*0.65:65)).sort((a,b)=>b.p-a.p).slice(0,4)
-    .forEach(p=>{
-      const gap=esp?(p.pct-esp):(p.pct-100);
-      const dNm=(p.d||'').replace(/DIRECCION\s*(DE\s*)?/gi,'').replace(/DIRECCIÓN\s*(DE\s*)?/gi,'').trim().substring(0,28);
-      obs.push({lvl:'proj',ctx:p.nm.length>30?p.nm.substring(0,30)+'…':p.nm,
-        t:`[${dNm}] Cumplimiento <b>${p.pct.toFixed(1)}%</b> (<b>${gap.toFixed(1)} pp</b>). Meta ${fmtM(p.p)} · WIP+Aj. ${fmtM(p.acum)}.`});
-    });
-  // Proyectos destacados
-  projs.filter(p=>p.p>50&&p.pct>(esp?esp*1.25:115)).sort((a,b)=>b.pct-a.pct).slice(0,2)
-    .forEach(p=>{
-      const gap=esp?(p.pct-esp):(p.pct-100);
-      obs.push({lvl:'ok',ctx:p.nm.length>30?p.nm.substring(0,30)+'…':p.nm,
-        t:`Supera el ritmo en <b>+${gap.toFixed(1)} pp</b>. Cumplimiento ${p.pct.toFixed(1)}% · Meta ${fmtM(p.p)}.`});
-    });
-  // Tendencia
-  if(ms.length>1){
-    const prev=ms[ms.length-2]; const pt=DATA[prev]?.g?.TOTAL;
-    if(pt){
-      const t=+(pct-pt.pct).toFixed(1);
-      obs.push({lvl:t>=0?'ok':'gen',ctx:'Tendencia',t:`Vs ${ML[prev]||prev}: cumplimiento ${t>=0?'mejoró':'bajó'} <b>${Math.abs(t)} pp</b> (${pt.pct.toFixed(1)}% → ${pct.toFixed(1)}%).`});
-    }
-  }
-
-  // Render alerts panel
+  // ③ ALERTAS & OBSERVACIONES — activas SOLO con ejecución real ─────────
   const LVL={gen:'General',ger:'Gerencia',dir:'Dirección',proj:'Proyecto',ok:'Destacado'};
-  document.getElementById('infAlertsPanel').innerHTML=`
-    <div class="inf-ap-kpis">
-      ${kpiCards.map(k=>`<div class="inf-ap-kpi ${k.cls}">
-        <div class="inf-ap-kpi-icon">${k.icon}</div>
-        <div class="inf-ap-kpi-body">
-          <div class="inf-ap-kpi-lbl">${k.lbl}</div>
-          <div class="inf-ap-kpi-val">${k.val}</div>
-          <div class="inf-ap-kpi-sub">${k.sub}</div>
-        </div>
-      </div>`).join('')}
-    </div>
-    <div class="card" style="padding:0;overflow:hidden">
-      <div class="inf-obs-timeline">
-        ${obs.map(o=>`<div class="inf-obs-entry">
-          <div class="inf-obs-left">
-            <span class="inf-obs-lvl ${o.lvl}">${LVL[o.lvl]||o.lvl}</span>
-            <span class="inf-obs-context">${o.ctx||''}</span>
+
+  if(!hasEjecucion){
+    // ── SIN EJECUCIÓN: mostrar panel informativo, sin alertas ──────────
+    document.getElementById('infAlertsPanel').innerHTML=`
+      <div style="background:#fff;border-radius:var(--r);box-shadow:var(--sh);
+           padding:24px 28px;display:flex;align-items:flex-start;gap:16px;
+           border-left:4px solid var(--cyan)">
+        <div style="font-size:28px;flex-shrink:0">⏳</div>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:6px">
+            Proyección mensual cargada · Pendiente de ejecución
           </div>
-          <div class="inf-obs-right">${o.t}</div>
+          <div style="font-size:13px;color:var(--mid);line-height:1.6;max-width:700px">
+            Aún no existen datos de ejecución para <b>${mesLbl}</b>.
+            Las alertas de cumplimiento, semáforos y observaciones se activarán automáticamente
+            cuando se registre la primera ejecución semanal (Semana 1).
+          </div>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <div style="background:#F0F9FC;border-radius:6px;padding:8px 14px;font-size:12px;color:var(--cyan)">
+              📋 Meta mensual: <b>${fmtM(pron)}</b>
+            </div>
+            ${dm?`<div style="background:#F5F7FA;border-radius:6px;padding:8px 14px;font-size:12px;color:var(--mid)">
+              📅 Días hábiles del mes: <b>${dm}</b>
+            </div>`:''}
+            <div style="background:#F5F7FA;border-radius:6px;padding:8px 14px;font-size:12px;color:var(--mid)">
+              🗂 Proyectos cargados: <b>${projs.length}</b>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    // ── CON EJECUCIÓN: generar alertas y observaciones completas ───────
+    const critCount  = projs.filter(p=>p.p>0&&p.pct<(esp?esp*0.7:70)).length;
+    const alertCount = projs.filter(p=>p.p>0&&p.pct>=(esp?esp*0.7:70)&&p.pct<(esp||100)).length;
+    const okCount    = projs.filter(p=>p.pct>=(esp||100)).length;
+    const gerAlerts  = GERS.filter(g=>{const gd=DATA[mes].g[g]||{};const gap=esp?(gd.pct-esp):(gd.pct-100);return gap<-5;}).length;
+
+    const kpiCards = [
+      {cls:'bad', icon:'🔴', val:critCount,  lbl:'Proyectos Críticos', sub:`Bajo ${esp?Math.round(esp*0.7)+'% (70% del esp.)':'70%'}`},
+      {cls:'warn',icon:'🟡', val:alertCount, lbl:'En Alerta',          sub:'Entre 70–99% del ritmo'},
+      {cls:'ok',  icon:'🟢', val:okCount,    lbl:'En Meta o Superando',sub:`Cumplimiento ≥ ${esp||100}%`},
+      {cls:'gen', icon:'🏢', val:gerAlerts,  lbl:'Gerencias c/ Alerta',sub:'Desviación > 5 pp vs esperado'},
+    ];
+
+    const obs = [];
+    // General corporativo
+    if(desv > 5)
+      obs.push({lvl:'ok',  ctx:'Corporativo',
+        t:`Portafolio supera el ritmo esperado en <b>+${desv} pp</b>. Avance real <b>${pct.toFixed(1)}%</b> vs <b>${esp}%</b> esperado al corte de ${semLbl} (${da}d/${dm}d hábiles). Proyección de cierre favorable.`});
+    else if(desv >= -5)
+      obs.push({lvl:'gen', ctx:'Corporativo',
+        t:`Portafolio dentro del rango de seguimiento. Avance real <b>${pct.toFixed(1)}%</b> vs <b>${esp}%</b> esperado (${desv} pp) al corte ${semLbl}. Monitorear semanas siguientes.`});
+    else
+      obs.push({lvl:'gen', ctx:'Corporativo',
+        t:`Portafolio <b>${Math.abs(desv).toFixed(1)} pp</b> por debajo del ritmo al corte ${semLbl} (${da}d/${dm}d hábiles). Real <b>${pct.toFixed(1)}%</b> vs <b>${esp}%</b> esperado. <b>Acción requerida.</b>`});
+
+    // Por gerencia
+    GERS.forEach((g,i)=>{
+      const gd2=DATA[mes].g[g]||{}; const gp=gd2.pct||0;
+      const gap=esp?(gp-esp):(gp-100);
+      const espStr=esp?` al corte ${semLbl} (${gp.toFixed(1)}% vs ${esp}% esperado)`:'';
+      if(gap < -15)
+        obs.push({lvl:'gen',ctx:GS[i],
+          t:`Desviación crítica <b>${gap.toFixed(1)} pp</b>${espStr}. Meta ${fmtM(gd2.p)} · WIP+Ajuste ${fmtM(gd2.acum)}. Requiere revisión inmediata.`});
+      else if(gap < -5)
+        obs.push({lvl:'ger',ctx:GS[i],
+          t:`Desviación moderada <b>${gap.toFixed(1)} pp</b>${espStr}. Meta ${fmtM(gd2.p)} · WIP+Ajuste ${fmtM(gd2.acum)}. Monitoreo recomendado.`});
+      else if(gap > 10)
+        obs.push({lvl:'ok', ctx:GS[i],
+          t:`Supera el ritmo en <b>+${gap.toFixed(1)} pp</b>${espStr}. Meta ${fmtM(gd2.p)} · WIP+Ajuste ${fmtM(gd2.acum)}.`});
+    });
+
+    // Por dirección crítica
+    Object.entries(DATA[mes].dr||{})
+      .filter(([k,v])=>v.p>100&&(esp?(v.pct-esp)<-10:(v.pct-100)<-10))
+      .sort((a,b)=>(a[1].pct||0)-(b[1].pct||0)).slice(0,3)
+      .forEach(([dk,dv])=>{
+        const dNm=dk.replace(/DIRECCION\s*(DE\s*)?/gi,'').replace(/DIRECCIÓN\s*(DE\s*)?/gi,'').trim();
+        const gap=esp?(dv.pct-esp):(dv.pct-100);
+        obs.push({lvl:'dir',ctx:dNm,
+          t:`Desviación <b>${gap.toFixed(1)} pp</b> al corte ${semLbl}. Cumplimiento ${dv.pct.toFixed(1)}% · Meta ${fmtM(dv.p)} · WIP+Ajuste ${fmtM(dv.acum)}.`});
+      });
+
+    // Proyectos críticos
+    projs.filter(p=>p.p>80&&p.pct<(esp?esp*0.65:65)).sort((a,b)=>b.p-a.p).slice(0,4)
+      .forEach(p=>{
+        const gap=esp?(p.pct-esp):(p.pct-100);
+        const dNm=(p.d||'').replace(/DIRECCION\s*(DE\s*)?/gi,'').replace(/DIRECCIÓN\s*(DE\s*)?/gi,'').trim().substring(0,28);
+        obs.push({lvl:'proj',ctx:p.nm.length>30?p.nm.substring(0,30)+'…':p.nm,
+          t:`[${dNm}] Cumplimiento <b>${p.pct.toFixed(1)}%</b> (<b>${gap.toFixed(1)} pp</b>) al corte ${semLbl}. Meta ${fmtM(p.p)} · WIP+Aj. ${fmtM(p.acum)}.`});
+      });
+
+    // Proyectos destacados
+    projs.filter(p=>p.p>50&&p.pct>(esp?esp*1.25:115)).sort((a,b)=>b.pct-a.pct).slice(0,2)
+      .forEach(p=>{
+        const gap=esp?(p.pct-esp):(p.pct-100);
+        obs.push({lvl:'ok',ctx:p.nm.length>30?p.nm.substring(0,30)+'…':p.nm,
+          t:`Supera el ritmo en <b>+${gap.toFixed(1)} pp</b> al corte ${semLbl}. Cumplimiento ${p.pct.toFixed(1)}% · Meta ${fmtM(p.p)}.`});
+      });
+
+    // Tendencia vs mes anterior
+    if(ms.length>1){
+      const prev=ms[ms.length-2]; const pt=DATA[prev]?.g?.TOTAL;
+      if(pt&&DATA[prev]?.as?.length>0){
+        const t=+(pct-pt.pct).toFixed(1);
+        obs.push({lvl:t>=0?'ok':'gen',ctx:'Tendencia',
+          t:`Vs ${ML[prev]||prev} (cierre): cumplimiento ${t>=0?'mejoró':'bajó'} <b>${Math.abs(t)} pp</b> (${pt.pct.toFixed(1)}% → ${pct.toFixed(1)}%).`});
+      }
+    }
+
+    document.getElementById('infAlertsPanel').innerHTML=`
+      <div class="inf-ap-kpis">
+        ${kpiCards.map(k=>`<div class="inf-ap-kpi ${k.cls}">
+          <div class="inf-ap-kpi-icon">${k.icon}</div>
+          <div class="inf-ap-kpi-body">
+            <div class="inf-ap-kpi-lbl">${k.lbl}</div>
+            <div class="inf-ap-kpi-val">${k.val}</div>
+            <div class="inf-ap-kpi-sub">${k.sub}</div>
+          </div>
         </div>`).join('')}
-        ${!obs.length?'<div style="padding:16px;color:var(--light);font-size:12px">Sin observaciones para este período.</div>':''}
       </div>
-    </div>`;
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="inf-obs-timeline">
+          ${obs.map(o=>`<div class="inf-obs-entry">
+            <div class="inf-obs-left">
+              <span class="inf-obs-lvl ${o.lvl}">${LVL[o.lvl]||o.lvl}</span>
+              <span class="inf-obs-context">${o.ctx||''}</span>
+            </div>
+            <div class="inf-obs-right">${o.t}</div>
+          </div>`).join('')}
+          ${!obs.length?'<div style="padding:16px;color:var(--light);font-size:12px">Sin observaciones para este período.</div>':''}
+        </div>
+      </div>`;
+  }
 
   // ④ PROYECTOS — tabla con comentarios integrados ─────────────────────
   _infProjData = projs;
@@ -1330,8 +1399,10 @@ function infSetFilt(type, btn){
   const SEM_C  = _infProjSemC;
   const getSem = _infGetSem || (n=>(n.sem||null));
 
-  const kpiCol = v => v>=(esp||100)?'var(--ok)':v>=(esp?esp*0.85:85)?'var(--orange)':'var(--red)';
-  const semIcon= v => v>=(esp||100)?'🟢':v>=(esp?esp*0.85:85)?'🟡':'🔴';
+  // With no ejecucion, no color coding on project table
+  const hasEjec = _infProjData.some(p=>p.wip>0||p.acum>0);
+  const kpiCol = v => !hasEjec?'var(--mid)':v>=(esp||100)?'var(--ok)':v>=(esp?esp*0.85:85)?'var(--orange)':'var(--red)';
+  const semIcon= v => !hasEjec?'⬜':v>=(esp||100)?'🟢':v>=(esp?esp*0.85:85)?'🟡':'🔴';
 
   let filtered = projs;
   if(type==='crit')  filtered = projs.filter(p=>p.p>0&&p.pct<(esp?esp*0.7:70));
