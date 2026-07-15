@@ -676,7 +676,15 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
 ══════════════════════════════════════════════════════ -->
 <div id="pane-informe" class="pane">
 
-  <!-- ① COMMAND BAR -->
+  <!-- ① SELECTOR DE MES + COMMAND BAR -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--light)">Período:</span>
+    <select id="selInformeMes" class="fsel" style="min-width:140px;font-weight:700"
+            onchange="setMes(this.value)">
+      <option value="ALL">Todos los meses</option>
+    </select>
+    <span style="font-size:11px;color:var(--light)">← Selecciona el mes a analizar</span>
+  </div>
   <div class="inf-cmdbar" id="informeHeader"></div>
 
   <!-- ② DESEMPEÑO POR GERENCIA -->
@@ -1120,6 +1128,13 @@ function rInforme() {
   const as     = DATA[mes].as || [];
   const ctx    = DATA[mes].ctx || {};
   const dm     = ctx.dias_mes  || null;
+
+  // Populate & sync the in-pane month selector
+  const selIM = document.getElementById('selInformeMes');
+  if(selIM && selIM.options.length < 2){
+    MO.forEach(m=>{ const o=document.createElement('option'); o.value=m; o.text=ML[m]||m; selIM.appendChild(o); });
+  }
+  if(selIM) selIM.value = stMes!=='ALL' ? stMes : mes;
 
   // ── CLAVE DE NEGOCIO: ¿hay ejecución real? ──────────────────────────
   // hasEjecucion = true si al menos una semana WIP tiene datos (s1..s5 > 0)
@@ -1995,13 +2010,22 @@ function setYear(y,btn){
   document.getElementById('selMes').value='ALL';
   document.querySelectorAll('#btnYear .fbtn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
+  // Sync selTabMes to ALL
+  const stm=document.getElementById('selTabMes');
+  if(stm) stm.value='ALL';
   refresh();
+  if(document.getElementById('pane-informe')?.classList.contains('on')) rInforme();
 }
 function setMes(v){
   stMes=v; stYear='ALL';
   document.querySelectorAll('#btnYear .fbtn').forEach(b=>b.classList.remove('on'));
   document.querySelector('#btnYear .fbtn').classList.add('on');
+  // Sync selTabMes (Detalle tab) with the same month
+  const stm=document.getElementById('selTabMes');
+  if(stm) stm.value=v;
   refresh();
+  // If Informe tab is visible, re-render it too
+  if(document.getElementById('pane-informe')?.classList.contains('on')) rInforme();
 }
 function setGer(v){ stGer=v; refresh(); }
 function sw(id,btn){
@@ -2009,7 +2033,13 @@ function sw(id,btn){
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
   btn.classList.add('on');
   document.getElementById('pane-'+id).classList.add('on');
-  if(id==='informe') rInforme();
+  if(id==='informe'){
+    // Ensure selMes reflects current stMes before rendering
+    const selM=document.getElementById('selMes');
+    if(selM&&stMes!=='ALL') selM.value=stMes;
+    rInforme();
+  }
+  if(id==='tabla') renderTabla();
 }
 function refresh(){
   const ms=months();
