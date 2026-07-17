@@ -557,37 +557,42 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
 
 <div class="wrap">
 
-<!-- FILTER BAR — ÚNICO, controla TODAS las pestañas -->
-<div class="fbar" style="background:var(--dark);border-bottom:3px solid var(--green);padding:10px 22px">
-  <span style="font-size:11px;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-right:4px">Filtros globales:</span>
-  <div class="fbar-sep" style="background:rgba(255,255,255,.15)"></div>
-  <span class="flbl" style="color:rgba(255,255,255,.7)">Mes</span>
-  <select class="fsel" id="selMes" onchange="setMes(this.value)"
-          style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2);font-weight:700;min-width:130px">
-    <option value="ALL">Todos los meses</option>
-    <option value="202510">Oct 2025</option>
-    <option value="202511">Nov 2025</option>
-    <option value="202512">Dic 2025</option>
-    <option value="202601">Ene 2026</option>
-    <option value="202602">Feb 2026</option>
-    <option value="202603">Mar 2026</option>
-    <option value="202604">Abr 2026</option>
-    <option value="202605">May 2026</option>
-    <option value="202606">Jun 2026</option>
-    <option value="202607" selected>Jul 2026</option>
-  </select>
-  <div class="fbar-sep" style="background:rgba(255,255,255,.15)"></div>
-  <span class="flbl" style="color:rgba(255,255,255,.7)">Gerencia</span>
-  <select class="fsel" id="selGer" onchange="setGer(this.value)"
-          style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">
-    <option value="ALL">Todas</option>
-    <option value="GERENCIA DE CONSULTORÍA">G. Consultoría</option>
-    <option value="GERENCIA DE OPERACIONES TECNICAS Y COMERCIALES">G. Operaciones TyC</option>
-    <option value="GERENCIA TI">G. TI</option>
-  </select>
+<!-- FILTER BAR — controla TODAS las pestañas -->
+<div style="background:#fff;border-bottom:2px solid var(--border);padding:8px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+  <span style="font-size:10.5px;font-weight:800;color:var(--light);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap">Filtrar por:</span>
+  <div style="display:flex;align-items:center;gap:6px">
+    <label style="font-size:11px;font-weight:700;color:var(--mid);white-space:nowrap">Mes</label>
+    <select id="selMes" onchange="setMes(this.value)"
+            style="padding:5px 10px;border:2px solid var(--cyan);border-radius:6px;background:#fff;color:var(--dark);font-size:13px;font-weight:700;cursor:pointer;outline:none;min-width:130px">
+      <option value="ALL" style="background:#fff;color:var(--dark)">Todos los meses</option>
+      <option value="202510" style="background:#fff;color:var(--dark)">Oct 2025</option>
+      <option value="202511" style="background:#fff;color:var(--dark)">Nov 2025</option>
+      <option value="202512" style="background:#fff;color:var(--dark)">Dic 2025</option>
+      <option value="202601" style="background:#fff;color:var(--dark)">Ene 2026</option>
+      <option value="202602" style="background:#fff;color:var(--dark)">Feb 2026</option>
+      <option value="202603" style="background:#fff;color:var(--dark)">Mar 2026</option>
+      <option value="202604" style="background:#fff;color:var(--dark)">Abr 2026</option>
+      <option value="202605" style="background:#fff;color:var(--dark)">May 2026</option>
+      <option value="202606" style="background:#fff;color:var(--dark)">Jun 2026</option>
+      <option value="202607" selected style="background:#fff;color:var(--dark);font-weight:800">Jul 2026</option>
+    </select>
+  </div>
+  <div style="width:1px;height:22px;background:var(--border)"></div>
+  <div style="display:flex;align-items:center;gap:6px">
+    <label style="font-size:11px;font-weight:700;color:var(--mid);white-space:nowrap">Gerencia</label>
+    <select id="selGer" onchange="setGer(this.value)"
+            style="padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:#fff;color:var(--dark);font-size:12px;font-weight:600;cursor:pointer;outline:none">
+      <option value="ALL"                                           style="background:#fff">Todas las gerencias</option>
+      <option value="GERENCIA DE CONSULTORÍA"                       style="background:#fff">G. Consultoría</option>
+      <option value="GERENCIA DE OPERACIONES TECNICAS Y COMERCIALES" style="background:#fff">G. Operaciones TyC</option>
+      <option value="GERENCIA TI"                                   style="background:#fff">G. TI</option>
+    </select>
+  </div>
   <span id="filterSummary"
-        style="margin-left:auto;font-size:11.5px;color:rgba(255,255,255,.6);font-weight:600"></span>
-  <!-- Hidden year buttons — keep for JS compat -->
+        style="margin-left:auto;font-size:11.5px;color:var(--cyan);font-weight:700;
+               background:rgba(13,169,201,.08);padding:4px 10px;border-radius:20px;
+               border:1px solid rgba(13,169,201,.2);white-space:nowrap"></span>
+  <!-- Hidden year buttons — JS compat -->
   <div id="btnYear" style="display:none">
     <button onclick="setYear('ALL',this)">Todos</button>
     <button onclick="setYear('2025',this)">2025</button>
@@ -2026,82 +2031,95 @@ function setYear(y,btn){
     if(activePane.id==='pane-tabla')   renderTabla();
   }
 }
+// ══════════════════════════════════════════════════════════
+// FILTROS GLOBALES — controlan TODAS las pestañas
+// ══════════════════════════════════════════════════════════
+
+function _syncSelects(){
+  // Mantiene todos los selectores visuales en sync con el estado global
+  var ids_mes = ['selMes','selTabMes','selInformeMes'];
+  var ids_ger = ['selGer','selTabGer'];
+  ids_mes.forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value=stMes;
+  });
+  ids_ger.forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value=stGer;
+  });
+  // Actualizar badge resumen
+  var mes = stMes!=='ALL' ? (ML[stMes]||stMes) : 'Todos los meses';
+  var ger = stGer==='ALL' ? 'Todas las gerencias'
+    : stGer.replace('GERENCIA DE OPERACIONES TECNICAS Y COMERCIALES','G. Operaciones TyC')
+           .replace('GERENCIA DE CONSULTORÍA','G. Consultoría')
+           .replace('GERENCIA TI','G. TI');
+  var badge = document.getElementById('filterSummary');
+  if(badge) badge.textContent = mes + '  ·  ' + ger;
+  // Actualizar pill
+  var lbl = stMes!=='ALL' ? (ML[stMes]||stMes)
+    : (ML[MO[0]]||MO[0])+' – '+(ML[MO[MO.length-1]]||MO[MO.length-1]);
+  var pill = document.getElementById('pillP');
+  if(pill) pill.textContent = lbl;
+}
+
 function setMes(v){
-  stMes=v; stYear='ALL';
-  // Sync hidden Detalle selects
-  const stm=document.getElementById('selTabMes');
-  if(stm){ stm.value=v; }
-  // Update filterSummary
-  _updateFilterSummary();
-  refresh();
-  // Re-render active tab
-  const activePane=document.querySelector('.pane.on');
-  if(activePane){
-    if(activePane.id==='pane-informe') rInforme();
-    if(activePane.id==='pane-tabla')   renderTabla();
-  }
+  stMes = v;
+  stYear = 'ALL';
+  _syncSelects();
+  _renderAll();
 }
+
 function setGer(v){
-  stGer=v;
-  // Sync hidden Detalle gerencia select
-  const stg=document.getElementById('selTabGer');
-  if(stg){ stg.value=v; }
-  _updateFilterSummary();
-  refresh();
-  const activePane=document.querySelector('.pane.on');
-  if(activePane){
-    if(activePane.id==='pane-informe') rInforme();
-    if(activePane.id==='pane-tabla')   renderTabla();
-  }
+  stGer = v;
+  _syncSelects();
+  _renderAll();
 }
+
+function setYear(y, btn){
+  stYear = y;
+  stMes  = 'ALL';
+  _syncSelects();
+  _renderAll();
+}
+
+function _renderAll(){
+  // Renderiza TODAS las pestañas para que al cambiar de pestaña
+  // siempre estén al día — sin importar cuál está activa
+  rKPI();
+  renderPvE();
+  rGerBar();
+  rCumpl();
+  rAjuste();
+  rSemGer();
+  rHist();
+  rSem();
+  renderTabla();
+  rInforme();
+}
+
 function refresh(){
-  const ms=months();
-  const lbl=stMes!=='ALL'?ML[stMes]:stYear!=='ALL'?'Año '+stYear:(ML[MO[0]]||MO[0])+' – '+(ML[MO[MO.length-1]]||MO[MO.length-1]);
-  document.getElementById('pillP').textContent=lbl;
-  document.getElementById('filterSummary').textContent=
-    `${ms.length} mes(es) · ${stGer==='ALL'?'Todas las gerencias':GS[GERS.indexOf(stGer)]||stGer}`;
-  rKPI(); renderPvE(); rGerBar(); rCumpl(); rAjuste(); rSemGer();
-  rHist(); rSem(); renderTabla();
-  // Also refresh informe if visible
-  const infoPane=document.getElementById('pane-informe');
-  if(infoPane&&infoPane.classList.contains('on')) rInforme();
+  _syncSelects();
+  _renderAll();
 }
 
-// ── INIT ────────────────────────────────────────────────────────────
-// ── AUTO-LOAD DESDE GITHUB ─────────────────────────────────────────
-// Si el Excel vive en el repo GitHub, se carga automáticamente al abrir.
-// Cambia EXCEL_URL a la URL Raw de tu archivo en GitHub.
-const EXCEL_URL = 'https://raw.githubusercontent.com/kcorenad/PMO-ISES/main/PC_Reporte_de_WIP_2026.xlsx';
-
-function autoLoadExcel() {
-  // Datos embebidos directamente en el HTML — no requiere fetch externo
-  // Para actualizar: sube el nuevo index.html generado por el sistema
-  console.info('Datos embebidos al día — no se requiere carga externa.');
-}
-
-// ── TAB SWITCHER ────────────────────────────────────────────────────
+// ── TAB SWITCHER ────────────────────────────────────────────
 function sw(id, btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.classList.remove('on');
+  });
+  document.querySelectorAll('.pane').forEach(function(p){
+    p.classList.remove('on');
+  });
   if(btn) btn.classList.add('on');
-  const pane = document.getElementById('pane-'+id);
+  var pane = document.getElementById('pane-'+id);
   if(pane) pane.classList.add('on');
-  // Sync all selects with global state
-  ['selMes','selTabMes'].forEach(function(sid){
-    var el=document.getElementById(sid); if(el) el.value=stMes;
-  });
-  ['selGer','selTabGer'].forEach(function(sid){
-    var el=document.getElementById(sid); if(el) el.value=stGer;
-  });
-  _updateFilterSummary();
-  if(id==='informe') rInforme();
-  if(id==='tabla')   renderTabla();
+  // Sync selects on tab open (data already rendered by _renderAll)
+  _syncSelects();
 }
+
+
 
 buildDirOptions();
-refresh();
-rInforme();
-_updateFilterSummary();
+_syncSelects();
+_renderAll();
 
 // Intenta cargar Excel desde GitHub (solo si la URL está configurada)
 // Auto-load deshabilitado: datos embebidos al día
@@ -2247,4 +2265,5 @@ function processFile(file){
 
 </script>
 
-</body></html>
+</body>
+</html>
