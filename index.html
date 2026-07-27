@@ -531,6 +531,17 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
   .inf-bullet-grid{grid-template-columns:1fr;}
 }
 
+
+/* ── NOTAS EN DETALLE ─────────────────────────────────────── */
+.proj-notes-block{margin-top:5px;border-top:1px solid var(--border);padding-top:5px;}
+.proj-notes-sem{margin-bottom:6px;}
+.proj-notes-sem-lbl{display:inline-block;font-size:9px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.6px;color:#fff;padding:1px 7px;
+  border-radius:8px;margin-bottom:3px;}
+.proj-note-item{font-size:11.5px;color:var(--dark);line-height:1.45;
+  padding:2px 0 2px 10px;border-left:2px solid var(--border);margin-bottom:2px;}
+.proj-note-item+.proj-note-item{border-left-color:var(--border);}
+
 </style>
 
 <body>
@@ -1683,7 +1694,15 @@ function renderTabla(){
 
       if(!aggGer[gk]) aggGer[gk]={p:0,wip:0,aj:0,acum:0,s1:0,s2:0,s3:0,s4:0,s5:0};
       if(!aggDir[dk]) aggDir[dk]={p:0,wip:0,aj:0,acum:0,s1:0,s2:0,s3:0,s4:0,s5:0,ger:pr.g,dir:pr.d};
-      if(!aggProj[pk]) aggProj[pk]={p:0,wip:0,aj:0,acum:0,s1:0,s2:0,s3:0,s4:0,s5:0,nm:pr.nm,g:pr.g,d:pr.d,cons:pr.cons,nt:pr.nt||[]};
+      if(!aggProj[pk]){
+        aggProj[pk]={p:0,wip:0,aj:0,acum:0,s1:0,s2:0,s3:0,s4:0,s5:0,nm:pr.nm,g:pr.g,d:pr.d,cons:pr.cons,nt:[]};
+      }
+      // Accumulate ALL notes from every row matching this project
+      (pr.nt||[]).forEach(function(n){
+        // Avoid duplicates
+        var exists=aggProj[pk].nt.some(function(x){return x.t===n.t&&x.sem===n.sem;});
+        if(!exists) aggProj[pk].nt.push(n);
+      });
 
       ['p','wip','aj','acum','s1','s2','s3','s4','s5'].forEach(k=>{
         aggGer[gk][k]+=pr[k]||0;
@@ -1790,8 +1809,39 @@ function renderTabla(){
         projCount++;
         const projHidden = startDirOpen ? '' : 'hidden';
         const consB = p.cons ? '<span class="cons-badge">🔵 E+E</span>' : '';
-        const noteHtml = p.nt&&p.nt.length>0
-          ? p.nt.slice(0,1).map(n=>`<div class="proj-note">📝 [${n.s}] ${n.t.slice(0,100)}</div>`).join('') : '';
+        // Build notes grouped by semana — ALL notes, full text
+        const SEM_COLORS_DET={0:'#6B7A8D',1:'#0DA9C9',2:'#9BC534',3:'#E8950A',4:'#00B0F0',5:'#8B5CF6'};
+        function getDetSem(n){
+          var t=(n.t||'').trim();
+          var m=t.match(/^S([1-5])[\s:\-\/]/i);
+          if(m) return parseInt(m[1]);
+          return (n.sem&&n.sem>=1&&n.sem<=5)?n.sem:0;
+        }
+        let noteHtml='';
+        if(p.nt&&p.nt.length>0){
+          // Sort by semana
+          var sortedN=[...p.nt].sort(function(a,b){return getDetSem(a)-getDetSem(b);});
+          // Group by semana
+          var bySem={};
+          sortedN.forEach(function(n){
+            var s=getDetSem(n);
+            if(!bySem[s]) bySem[s]=[];
+            bySem[s].push(n.t||'');
+          });
+          var semKeys=Object.keys(bySem).map(Number).sort(function(a,b){return a-b;});
+          noteHtml='<div class="proj-notes-block">';
+          semKeys.forEach(function(s){
+            var col=SEM_COLORS_DET[s]||'#6B7A8D';
+            var lbl=s===0?'General':'S'+s;
+            noteHtml+='<div class="proj-notes-sem">';
+            noteHtml+='<span class="proj-notes-sem-lbl" style="background:'+col+'">'+lbl+'</span>';
+            bySem[s].forEach(function(t){
+              noteHtml+='<div class="proj-note-item">'+t+'</div>';
+            });
+            noteHtml+='</div>';
+          });
+          noteHtml+='</div>';
+        }
 
         rows += `<tr class="tr-proj ${projHidden} proj-of-${dId} proj-in-${gId}">
           <td class="tl">
