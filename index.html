@@ -541,6 +541,19 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
 .proj-note-item{font-size:11.5px;color:var(--dark);line-height:1.45;
   padding:2px 0 2px 10px;border-left:2px solid var(--border);margin-bottom:2px;}
 .proj-note-item+.proj-note-item{border-left-color:var(--border);}
+/* ── PROJ NOTES TOGGLE ──────────────────────────────────────── */
+.proj-notes-toggle{display:inline-block;font-size:9px;color:var(--light);
+  width:14px;text-align:center;transition:transform .15s;flex-shrink:0;
+  margin-right:2px;user-select:none;}
+.proj-notes-toggle.open{color:var(--cyan);}
+.tr-proj.has-notes:hover td{background:rgba(13,169,201,.04);}
+.tr-proj.notes-open td{background:rgba(13,169,201,.06);}
+.tr-proj-notes{background:#F8FAFB;}
+.tr-proj-notes.hidden{display:none;}
+.proj-notes-td{padding:8px 16px 12px 36px!important;}
+.proj-notes-count{font-size:10px;color:var(--light);margin-left:6px;font-weight:600;}
+.tr-proj.has-notes .proj-notes-count{cursor:pointer;}
+
 
 </style>
 
@@ -1610,6 +1623,19 @@ function treeExpandGer(){
   document.querySelectorAll('.tr-ger').forEach(r=>r.classList.add('open'));
   document.querySelectorAll('.tr-dir').forEach(r=>r.classList.remove('open'));
 }
+function toggleProjNotes(id, row){
+  const notesRow = document.getElementById(id);
+  const icon     = document.getElementById('icon-'+id);
+  if(!notesRow) return;
+  const isOpen = !notesRow.classList.contains('hidden');
+  notesRow.classList.toggle('hidden', isOpen);
+  if(icon){
+    icon.textContent = isOpen ? '▶' : '▼';
+    icon.classList.toggle('open', !isOpen);
+  }
+  if(row) row.classList.toggle('notes-open', !isOpen);
+}
+
 function toggleGer(gerId){
   const gerRow = document.getElementById('ger-'+gerId);
   const isOpen = gerRow.classList.toggle('open');
@@ -1662,13 +1688,16 @@ function renderTabla(){
     return true;
   });
 
-  const semLabels={ALL:'Todos',green:'🟢 En meta',yellow:'🟡 Alerta',red:'🔴 Crítico',nodata:'⬜ Sin datos'};
+  const semLabels={ALL:'Todos',green:'🟢 En meta / superando',yellow:'🟡 Alerta moderada',red:'🔴 Crítico / bajo ritmo',nodata:'⬜ Sin ejecución'};
+  // tabEsp is defined later — use a local ref
+  const _esp = (ms.length===1 && DATA[ms[0]]) ? (DATA[ms[0]].ctx?.avance_esperado||null) : null;
   function semOK(pct, p){
     if(tSem==='ALL') return true;
-    if(tSem==='nodata') return p>0 && (pct===0);
-    if(tSem==='green')  return pct>=100;
-    if(tSem==='yellow') return pct>=90 && pct<100;
-    if(tSem==='red')    return pct>0 && pct<90;
+    if(tSem==='nodata') return p===0 || pct===0;
+    const e = _esp;
+    if(tSem==='green')  return e ? pct>=e        : pct>=100;
+    if(tSem==='yellow') return e ? pct>=e*0.85&&pct<e : pct>=90&&pct<100;
+    if(tSem==='red')    return e ? pct>0&&pct<e*0.85  : pct>0&&pct<90;
     return true;
   }
 
@@ -1732,7 +1761,7 @@ function renderTabla(){
   // ── Determine initial open state based on filters ──
   // If ger or dir filter active → start expanded to that level
   const startGerOpen = true;  // always show directions by default
-  const startDirOpen = tDir!=='ALL' || tSem!=='ALL';
+  const startDirOpen = true;  // always expand dirs so notes are visible by default
 
   // ── Build table HTML ──
   const HEADER = `<thead><tr>
@@ -1777,8 +1806,13 @@ function renderTabla(){
       <td class="num">${sem(g.pct,tabEsp)}</td>
     </tr>`;
 
-    // Directions under this ger
-    const dirs = Object.values(aggDir).filter(d=>d.ger===gNm).sort((a,b)=>b.p-a.p);
+    // Directions under this ger — only those with projects passing the filter
+    const allDirs = Object.values(aggDir).filter(d=>d.ger===gNm).sort((a,b)=>b.p-a.p);
+    // Pre-check which dirs have at least one project passing semOK
+    const dirs = tSem==='ALL' ? allDirs : allDirs.filter(d=>{
+      return Object.values(aggProj).some(p=>p.g===gNm&&p.d===d.dir&&semOK(p.pct,p.p));
+    });
+    if(dirs.length===0) return;  // skip ger row too if no dirs
     dirs.forEach((d,di)=>{
       const dId = gId+'d'+di;
       dirCount++;
@@ -1803,11 +1837,15 @@ function renderTabla(){
         <td class="num">${sem(d.pct,tabEsp)}</td>
       </tr>`;
 
-      // Projects under this dir
-      const projs = Object.values(aggProj).filter(p=>p.g===gNm&&p.d===d.dir).sort((a,b)=>b.p-a.p);
+      // Projects under this dir — apply semáforo filter on AGGREGATED pct
+      const projs = Object.values(aggProj)
+        .filter(p=>p.g===gNm&&p.d===d.dir&&semOK(p.pct,p.p))
+        .sort((a,b)=>b.p-a.p);
+      // Skip direction entirely if no projects pass the filter
+      if(projs.length===0) return;
       projs.forEach((p,pi)=>{
         projCount++;
-        const projHidden = startDirOpen ? '' : 'hidden';
+        const projHidden = '';  // always visible — notes shown inline
         const consB = p.cons ? '<span class="cons-badge">🔵 E+E</span>' : '';
         // Build notes grouped by semana — ALL notes, full text
         const SEM_COLORS_DET={0:'#6B7A8D',1:'#0DA9C9',2:'#9BC534',3:'#E8950A',4:'#00B0F0',5:'#8B5CF6'};
@@ -1843,10 +1881,16 @@ function renderTabla(){
           noteHtml+='</div>';
         }
 
-        rows += `<tr class="tr-proj ${projHidden} proj-of-${dId} proj-in-${gId}">
+        const hasNts = noteHtml !== '';
+        const pNoteId = 'pn-'+gId+'-'+di+'-'+pi;
+        rows += `<tr class="tr-proj ${projHidden} proj-of-${dId} proj-in-${gId}${hasNts?' has-notes':''}"
+                     onclick="${hasNts?`toggleProjNotes('${pNoteId}',this)`:''}"
+                     style="${hasNts?'cursor:pointer;':''}"
+                     title="${hasNts?'Clic para ver comentarios':''}">
           <td class="tl">
+            ${hasNts?`<span class="proj-notes-toggle" id="icon-${pNoteId}">▶</span>`:'<span style="display:inline-block;width:14px"></span>'}
             <span class="proj-nm" title="${p.nm}">${p.nm}</span>${consB}
-            ${noteHtml}
+            ${hasNts?`<span class="proj-notes-count">${p.nt.length} 💬</span>`:''}
           </td>
           <td class="num">${fmtM(p.p)}</td>
           <td class="num">${gerAS.includes(1)?fmtM(p.s1):"—"}</td>
@@ -1858,7 +1902,10 @@ function renderTabla(){
           <td class="num" style="font-weight:600;color:var(--cyan)">${fmtM(p.acum)}</td>
           <td class="num">${pct(p.pct)}</td>
           <td class="num">${sem(p.pct,tabEsp)}</td>
-        </tr>`;
+        </tr>
+        ${hasNts?`<tr class="tr-proj-notes hidden proj-of-${dId} proj-in-${gId}" id="${pNoteId}">
+          <td colspan="11" class="proj-notes-td">${noteHtml}</td>
+        </tr>`:''}`;
       });
     });
   });
