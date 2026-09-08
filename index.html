@@ -801,8 +801,10 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
       <option value="202604">Abr 2026</option>
       <option value="202605">May 2026</option>
       <option value="202606">Jun 2026</option>
-      <option value="202607" selected>Jul 2026</option>
-  </select>
+      <option value="202607">Jul 2026</option>
+      <option value="202608">Ago 2026</option>
+      <option value="202609">Sep 2026</option>
+    </select>
     <span style="font-size:11px;color:var(--light)">← Selecciona el mes a analizar</span>
   </div>
   <div class="inf-cmdbar" id="informeHeader"></div>
@@ -1014,6 +1016,7 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color
         <option value="202606" style="background:#fff;color:var(--dark)">Jun 2026</option>
         <option value="202607" style="background:#fff;color:var(--dark)">Jul 2026</option>
         <option value="202608" style="background:#fff;color:var(--dark)">Ago 2026</option>
+        <option value="202609" style="background:#fff;color:var(--dark)">Sep 2026</option>
       </select>
       <!-- selTabGer oculto — sincronizado con selGer de arriba -->
       <select id="selTabGer" style="display:none" onchange="renderTabla()">
@@ -1157,6 +1160,20 @@ function rKPI() {
   const gerFn = stGer==='ALL' ? m=>td(m) : m=>gd(m,stGer);
   const T = sumMonths(ms, gerFn);
   const cu = T.pct;
+  // Panel proyección cuando no hay ejecución
+  const hasEjec = ms.some(m => DATA[m] && DATA[m].as && DATA[m].as.length > 0);
+  if(!hasEjec && ms.length > 0){
+    const mesLbl = ms.length===1 ? (ML[ms[0]]||ms[0]) : ms.length+' meses';
+    const kpiEl = document.getElementById('kpiRow');
+    if(kpiEl) kpiEl.innerHTML =
+      '<div style="width:100%;background:#F0F9FC;border-radius:var(--r);border:2px dashed var(--cyan);'+
+      'padding:28px 24px;text-align:center;color:var(--mid)">'+
+      '<div style="font-size:28px;margin-bottom:8px">⏳</div>'+
+      '<div style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:6px">'+mesLbl+' — Pendiente de ejecución</div>'+
+      '<div style="font-size:13px">Proyección cargada: <b style="color:var(--cyan)">'+fmtM(T.p)+'</b></div>'+
+      '</div>';
+    return;
+  }
 
   const kpis=[
     {l:'Proyección',       v:fmtM(T.p),    d:'Periodo seleccionado',              c:'nt',  col:'var(--cyan)'},
@@ -1806,11 +1823,14 @@ function buildDirOptions() {
 }
 function onTabGerChange(){ buildDirOptions(); renderTabla(); }
 function clearTabFilters(){
-  ['selTabMes','selTabGer','selTabDir','selTabSem'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.value='ALL';
-  });
-  buildDirOptions(); renderTabla();
+  // Reset filtros adicionales de Detalle (Dirección + Semáforo)
+  var el;
+  el=document.getElementById('selTabDir'); if(el) el.value='ALL';
+  el=document.getElementById('selTabSem'); if(el) el.value='ALL';
+  // NO resetear mes ni gerencia — esos van por el filtro global
+  buildDirOptions();
+  _syncSelects();
+  _renderAll();
 }
 
 // Tree expand/collapse helpers
@@ -2357,6 +2377,9 @@ function _syncSelects(){
     : (ML[MO[0]]||MO[0])+' – '+(ML[MO[MO.length-1]]||MO[MO.length-1]);
   var pill = document.getElementById('pillP');
   if(pill) pill.textContent = lbl;
+  // Forzar select visible al valor correcto (evita "undefined" en badge)
+  var smEl=document.getElementById('selMes');
+  if(smEl && smEl.value !== stMes) smEl.value = stMes;
 }
 
 function setMes(v){
@@ -2380,8 +2403,8 @@ function setYear(y, btn){
 }
 
 function _renderAll(){
-  // Renderiza TODAS las pestañas para que al cambiar de pestaña
-  // siempre estén al día — sin importar cuál está activa
+  // Sincronizar selects antes de renderizar
+  _syncSelects();
   rKPI();
   renderPvE();
   rGerBar();
